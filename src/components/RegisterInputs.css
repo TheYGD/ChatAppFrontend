@@ -1,0 +1,4 @@
+.register-inputs {
+  display: flex;
+  flex-direction: column;
+}
