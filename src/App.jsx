@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Outlet, useNavigate } from 'react-router-dom'
 import './App.css'
 import Chats from './pages/Chats'
 import Register from './pages/Register'
@@ -14,6 +14,25 @@ export const AppContext = createContext()
 const url = 'http://localhost:8080'
 const urlGetUsername = url + '/api/get-username'
 
+function AppWithNavbar() {
+  return (
+    <>
+      <Navbar />
+      <div className="app-content">
+        <Outlet />
+      </div>
+    </>
+  )
+}
+
+function AppWithoutNavbar() {
+  return (
+    <div className="app-content">
+      <Outlet />
+    </div>
+  )
+}
+
 function App() {
   const [username, setUsername] = useState('')
   const [jwt, setJwt] = useState('')
@@ -23,6 +42,7 @@ function App() {
     jwt,
     setJwt,
   }
+  const navigate = useNavigate()
 
   useEffect(() => {
     loadUsernameIfLoggedIn()
@@ -38,21 +58,22 @@ function App() {
           .catch((err) => {
             if (err.response.status === 401) removeJwt(setJwt, setUsername)
           })
-      }
+      } else navigate('/login')
     }
   }, [])
 
   return (
     <AppContext.Provider value={appContextValue}>
-      <Navbar />
-      <div className="app-content">
-        <Routes>
-          <Route path="/" element={<Chats />} />
+      <Routes>
+        <Route path="/" element={<AppWithoutNavbar />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+        </Route>
+        <Route path="/" element={<AppWithNavbar />}>
+          <Route index element={<Chats />} />
           <Route path="/logout" element={<Logout />} />
-        </Routes>
-      </div>
+        </Route>
+      </Routes>
     </AppContext.Provider>
   )
 }

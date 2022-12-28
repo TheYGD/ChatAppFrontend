@@ -14,26 +14,18 @@ export default function Navbar() {
         </NavLink>
       </li>
 
-      {username === '' ? (
-        <li>
-          <NavLink className="navbar-link" to="/login">
-            Log in
-          </NavLink>
-        </li>
-      ) : (
-        <li>
-          <NavLink className="navbar-link" to="/profile">
-            {username}
-          </NavLink>
-          <ul className="navbar-dropdown">
-            <li>
-              <NavLink className="navbar-link" to="/logout">
-                logout
-              </NavLink>
-            </li>
-          </ul>
-        </li>
-      )}
+      <li>
+        <NavLink className="navbar-link" to="/profile">
+          {username}
+        </NavLink>
+        <ul className="navbar-dropdown">
+          <li>
+            <NavLink className="navbar-link" to="/logout">
+              logout
+            </NavLink>
+          </li>
+        </ul>
+      </li>
     </ul>
   )
 }
