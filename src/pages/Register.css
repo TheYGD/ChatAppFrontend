@@ -31,3 +31,16 @@
 .register-btn:hover {
   background-color: rgb(93, 147, 240);
 }
+
+.register-login-link {
+  text-decoration: none;
+}
+
+.register-login-link {
+  text-decoration: none;
+  color: rgb(48, 112, 223);
+}
+
+.register-login-link > p {
+  margin-left: 0.5rem;
+}

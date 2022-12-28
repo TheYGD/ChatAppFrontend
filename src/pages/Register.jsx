@@ -4,6 +4,7 @@ import './Register.css'
 import MyInput from '../components/MyInput'
 import axios from 'axios'
 import { InputObject } from '../classes/InputObject'
+import { Link } from 'react-router-dom'
 
 const url = 'http://localhost:8080'
 const registerUrl = url + '/api/register'
@@ -161,6 +162,9 @@ export default function Register() {
     <div className="register-box">
       {!registered ? (
         <>
+          <Link to="/login" className="register-login-link">
+            <p>Login</p>
+          </Link>
           <h1 className="register-title">Create an account</h1>
           <form className="register-form">
             <MyInput name="username" type="text" inputObject={usernameObj} />
@@ -184,6 +188,9 @@ export default function Register() {
         <>
           <h2>Account registered</h2>
           <p>Now you can log in</p>
+          <Link to="/login" className="register-login-link">
+            <p style={{ marginLeft: 0 }}>Login</p>
+          </Link>
         </>
       )}
     </div>
