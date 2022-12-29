@@ -27,7 +27,7 @@ function AppWithNavbar() {
 
 function AppWithoutNavbar() {
   return (
-    <div className="app-content">
+    <div className="app-content-center">
       <Outlet />
     </div>
   )

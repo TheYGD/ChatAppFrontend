@@ -1,4 +1,4 @@
-.navbar {
+.my-navbar {
   background: rgb(49, 117, 214);
   display: flex;
   list-style: none;
@@ -6,7 +6,7 @@
   padding-left: 2rem;
 }
 
-.navbar-link {
+.my-navbar-link {
   text-decoration: none;
   padding: 1rem;
   background: rgb(44, 109, 200);
@@ -21,16 +21,17 @@ li {
   transition-duration: 0.3s;
 }
 
-.navbar-dropdown .navbar-link {
+.my-navbar-dropdown .navbar-link {
   background: rgb(62, 125, 213);
 }
 
-.navbar-link:hover {
+.my-navbar-link:hover {
   background: rgb(28, 97, 194);
+  color: white;
   cursor: pointer;
 }
 
-.navbar-dropdown {
+.my-navbar-dropdown {
   display: none;
   position: absolute;
   list-style: none;
@@ -40,6 +41,6 @@ li {
   width: 100%;
 }
 
-li:hover > .navbar-dropdown {
+li:hover > .my-navbar-dropdown {
   display: block;
 }
