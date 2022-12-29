@@ -1,0 +1,11 @@
+.message-right {
+  color: white;
+  background: #6dafff;
+  align-self: end;
+}
+
+.message-left {
+  border: 1px #daeaff solid;
+  background: #f8fbff;
+  align-self: start;
+}
