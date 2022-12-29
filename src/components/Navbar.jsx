@@ -7,20 +7,20 @@ export default function Navbar() {
   const { username } = useContext(AppContext)
 
   return (
-    <ul className="navbar">
+    <ul className="my-navbar">
       <li>
-        <NavLink className="navbar-link" to="/">
+        <NavLink className="my-navbar-link" to="/">
           Chats
         </NavLink>
       </li>
 
       <li>
-        <NavLink className="navbar-link" to="/profile">
+        <NavLink className="my-navbar-link" to="/profile">
           {username}
         </NavLink>
-        <ul className="navbar-dropdown">
+        <ul className="my-navbar-dropdown">
           <li>
-            <NavLink className="navbar-link" to="/logout">
+            <NavLink className="my-navbar-link" to="/logout">
               logout
             </NavLink>
           </li>
