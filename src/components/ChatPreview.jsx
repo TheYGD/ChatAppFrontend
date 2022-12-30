@@ -44,16 +44,13 @@ function calculateDate(date) {
 }
 
 export default function Chat(props) {
-  const { id, usersId, usersName, message, date, setActiveChat, selected } =
-    props
+  const { chat, setActiveChat, selected } = props
+  const { id, usersName, message, date } = chat
   const processedMessage = message
   const processedDate = calculateDate(date)
 
   function openThisChat() {
-    const chatObj = {
-      id,
-    }
-    setActiveChat(chatObj)
+    setActiveChat(chat)
   }
 
   const selectedClassName = selected ? 'chat-preview-active' : ''

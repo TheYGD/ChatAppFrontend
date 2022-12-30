@@ -36,8 +36,28 @@ async function loadChats(
     })
 }
 
+async function sendMessage(chat, content, setContent) {
+  const params = { content }
+  await jwtRequest
+    .post(
+      getMessageUrlFromChatId(chat.id),
+      {},
+      {
+        params: params,
+      }
+    )
+    .then((res) => {
+      console.log('message sent')
+      setContent('')
+    })
+    .catch((err) => {
+      console.log(err)
+      console.error('error: message not sent')
+    })
+}
+
 async function loadMessagesFromChat(
-  chatId,
+  chat,
   setMessages,
   lastMessageId,
   setLastMessageId,
@@ -45,15 +65,15 @@ async function loadMessagesFromChat(
 ) {
   const params = { lastMessageId }
   await jwtRequest
-    .get(getMessageUrlFromChatId(chatId), {
+    .get(getMessageUrlFromChatId(chat.id), {
       params: params,
     })
     .then((res) => {
       const newMessages = res.data
       // all messages loaded?
-      if (newMessages.length == 0) {
+      if (!chat.firstMessageId || chat.firstMessageId === newMessages[0].id) {
         setLoadedAllMessages(true)
-        return
+        if (newMessages.length === 0) return
       }
       setMessages((prevMessages) => [...newMessages, ...prevMessages])
       setLastMessageId(newMessages[0].id)
@@ -79,9 +99,6 @@ export default function Chats() {
   }, [])
 
   async function onScrollChats() {
-    console.log(chatsEl.current)
-    console.log('scrollTop', chatsEl.current.scrollTop)
-    console.log('scrollHeight', chatsEl.current.scrollHeight)
     const current = chatsEl.current
     if (
       current.scrollHeight -
@@ -93,8 +110,6 @@ export default function Chats() {
       !loadedAllChats &&
       !loadingInProgress
     ) {
-      console.log('scrollTop', chatsEl.current.scrollTop)
-      console.log('scrollHeight', chatsEl.current.scrollHeight)
       setLoadingInProgress(true)
       await loadChats(
         setChats,
@@ -119,11 +134,11 @@ export default function Chats() {
               <Chat
                 selected={activeChat?.id === chat.id}
                 key={chat.id}
-                {...chat}
+                chat={chat}
                 setActiveChat={setActiveChat}
               />
             ))}
-            {!loadedAllChats ? (
+            {loadingInProgress && !loadedAllChats ? (
               <li>
                 <Loading />
               </li>
@@ -137,8 +152,9 @@ export default function Chats() {
             {activeChat ? (
               <ActiveChat
                 key={activeChat.id}
-                {...activeChat}
+                chat={activeChat}
                 loadMessages={loadMessagesFromChat}
+                sendMessage={sendMessage}
               />
             ) : (
               <h3 className="py-5 text-center">Click on a chat to open it</h3>

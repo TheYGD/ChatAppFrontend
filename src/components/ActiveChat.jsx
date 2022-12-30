@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { jwtRequest } from '../utils/my-requests'
 import './ActiveChat.css'
 
 function processMessageDate(date) {
@@ -30,21 +31,23 @@ function Message(props) {
   return (
     <>
       <p className={'col-6 message message-' + side}>{content}</p>
-      <p className={'px-4 my-0 message-date-' + side}>{processedDate}</p>
+      <p className={'message-date message-date-' + side}>{processedDate}</p>
     </>
   )
 }
 
 export default function ActiveChat(props) {
-  const { id, loadMessages } = props
+  const { chat, loadMessages, sendMessage } = props
   const [messages, setMessages] = useState([])
   const [lastMessageId, setLastMessageId] = useState(null)
   const [loadedAllMessages, setLoadedAllMessages] = useState(false)
+  const [sendMessageContent, setSendMessageContent] = useState('')
+  const [sendingInProgress, setSendingInProgress] = useState(false)
   const chatViewEl = useRef(null)
 
   useEffect(() => {
     loadMessages(
-      id,
+      chat,
       setMessages,
       lastMessageId,
       setLastMessageId,
@@ -56,11 +59,19 @@ export default function ActiveChat(props) {
     })
   }, [])
 
+  async function sendMessageIfPossible() {
+    if (!sendingInProgress) {
+      setSendingInProgress(true)
+      await sendMessage(chat, sendMessageContent, setSendMessageContent)
+      setSendingInProgress(false)
+    }
+  }
+
   async function onScrollChatView() {
     if (chatViewEl.current.scrollTop == 0 && !loadedAllMessages) {
       const scrollHeightBefore = chatViewEl.current.scrollHeight
       await loadMessages(
-        id,
+        chat,
         setMessages,
         lastMessageId,
         setLastMessageId,
@@ -69,7 +80,6 @@ export default function ActiveChat(props) {
       setTimeout(() => {
         chatViewEl.current.scrollTop =
           chatViewEl.current.scrollHeight - scrollHeightBefore
-        console.log(chatViewEl.current.scrollTop)
       }, 1)
     }
   }
@@ -78,11 +88,11 @@ export default function ActiveChat(props) {
     <>
       <div
         ref={chatViewEl}
-        className="overflow-auto d-flex flex-column py-4 px-3 h-100"
+        className="chat-view"
         onScroll={() => onScrollChatView()}
       >
         {loadedAllMessages ? (
-          <h5 className="text-center">Beginning of the chat</h5>
+          <h5 className="chat-beginning text-center">Beginning of the chat</h5>
         ) : (
           <></>
         )}
@@ -90,12 +100,18 @@ export default function ActiveChat(props) {
           <Message key={message.id} {...message} />
         ))}
       </div>
-      <div className="row mx-2 mt-3">
+      <div className="row mx-0 mt-3">
         <textarea
           className="col rounded-2 p-1 px-2"
           style={{ height: '5rem', resize: 'none' }}
+          value={sendMessageContent}
+          onChange={(event) => setSendMessageContent(event.target.value)}
         ></textarea>
-        <button type="button" className="btn btn-primary col-1 ms-4 my-auto">
+        <button
+          type="button"
+          className="btn btn-primary col-1 ms-4 my-auto"
+          onClick={sendMessageIfPossible}
+        >
           Send
         </button>
       </div>
