@@ -24,15 +24,15 @@ export const jwtRequestNoCatch = {
   },
   post: async function (url, data, config) {
     config = addAuthorizationToConfig(config)
-    return axios.get(url, data, config)
+    return axios.post(url, data, config)
   },
   delete: async function (url, config) {
     config = addAuthorizationToConfig(config)
-    return axios.get(url, config)
+    return axios.delete(url, config)
   },
   put: async function (url, data, config) {
     config = addAuthorizationToConfig(config)
-    return axios.get(url, data, config)
+    return axios.put(url, data, config)
   },
 }
 
