@@ -13,7 +13,8 @@ function calculateDate(date) {
 
   const now = new Date()
   const messageDate = new Date(date)
-  const secondsPast = Math.abs(now - messageDate) / 1000
+  const secondsPast = (now - messageDate) / 1000
+
   const timeArray = [
     secondsPast / 60, // mins
     secondsPast / 60 / 60, // hours
@@ -21,7 +22,7 @@ function calculateDate(date) {
     secondsPast / 60 / 60 / 24 / 7, // weeks
     secondsPast / 60 / 60 / 24 / 30, // months
     secondsPast / 60 / 60 / 24 / 365, // years
-  ].map((x) => parseInt(x))
+  ].map((x) => Math.floor(x))
   const timeSuffixArray = [
     minutesSuffix,
     hoursSuffix,
@@ -43,7 +44,8 @@ function calculateDate(date) {
 }
 
 export default function Chat(props) {
-  const { id, usersId, usersName, message, date, setActiveChat } = props
+  const { id, usersId, usersName, message, date, setActiveChat, selected } =
+    props
   const processedMessage = message
   const processedDate = calculateDate(date)
 
@@ -54,19 +56,17 @@ export default function Chat(props) {
     setActiveChat(chatObj)
   }
 
+  const selectedClassName = selected ? 'chat-preview-active' : ''
+
   return (
-    <li className="chat" onClick={openThisChat}>
+    <li className={'chat ' + selectedClassName} onClick={openThisChat}>
       <div className="chat-img"></div>
       <div className="chat-info">
         <h5 className="chat-name">{usersName}</h5>
-        {message ? (
-          <div className="chat-messagebox row">
-            <p className="chat-messagebox-date col-4">{processedDate}</p>
-            <p className="chat-messagebox-message col">{processedMessage}</p>
-          </div>
-        ) : (
-          <></>
-        )}
+        <div className="chat-messagebox row">
+          <p className="chat-messagebox-date col-4">{processedDate}</p>
+          <p className="chat-messagebox-message col">{processedMessage}</p>
+        </div>
       </div>
     </li>
   )
