@@ -1,0 +1,58 @@
+.chat {
+  height: 3.5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.chat:hover {
+  cursor: pointer;
+  background-color: #eee;
+}
+
+.chat-img {
+  min-width: 2.5rem;
+  height: 2.5rem;
+  background-color: aqua;
+  border-radius: 1000px;
+}
+
+.chat-info {
+  margin-left: 0.5rem;
+  width: 100%;
+}
+
+.chat-name {
+  margin: 2px;
+  font-size: 13px;
+}
+
+.chat-messagebox {
+  display: flex;
+  margin-right: 0rem;
+}
+
+.chat-messagebox-date {
+  margin: 2px;
+  color: #566;
+  font-size: 12px;
+}
+
+.chat-messagebox-message {
+  margin: 2px;
+  text-align: right;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0;
+}
+
+.chat-preview-active::before {
+  content: '';
+  position: absolute;
+  left: -0.75rem;
+  width: 0.5rem;
+  height: 3.5rem;
+  background-color: rgb(49, 117, 214);
+}
