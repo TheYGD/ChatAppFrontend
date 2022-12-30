@@ -37,8 +37,14 @@ function Message(props) {
 }
 
 export default function ActiveChat(props) {
-  const { chat, loadMessages, sendMessage } = props
-  const [messages, setMessages] = useState([])
+  const {
+    chat,
+    messages,
+    setMessages,
+    loadMessages,
+    sendMessage,
+    scrollDownTheMessagesRef,
+  } = props
   const [lastMessageId, setLastMessageId] = useState(null)
   const [loadedAllMessages, setLoadedAllMessages] = useState(false)
   const [sendMessageContent, setSendMessageContent] = useState('')
@@ -46,6 +52,9 @@ export default function ActiveChat(props) {
   const chatViewEl = useRef(null)
 
   useEffect(() => {
+    scrollDownTheMessagesRef.current = scrollDownTheMessagesIfSeesMostRecent
+
+    setMessages([])
     loadMessages(
       chat,
       setMessages,
@@ -58,6 +67,12 @@ export default function ActiveChat(props) {
       }, 1)
     })
   }, [])
+
+  /** Scroll only is the user sees most recent message aka scrollbar is at the lowest possible position */
+  function scrollDownTheMessagesIfSeesMostRecent() {
+    chatViewEl.current.scrollTop = chatViewEl.current.scrollHeight
+    // todo ONLY IF ITS OUTS
+  }
 
   async function sendMessageIfPossible() {
     if (!sendingInProgress) {
@@ -108,8 +123,7 @@ export default function ActiveChat(props) {
           onChange={(event) => setSendMessageContent(event.target.value)}
         ></textarea>
         <button
-          type="button"
-          className="btn btn-primary col-1 ms-4 my-auto"
+          className="btn message-send-btn col-1 ms-4 my-auto"
           onClick={sendMessageIfPossible}
         >
           Send

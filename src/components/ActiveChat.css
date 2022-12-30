@@ -32,6 +32,7 @@
 }
 
 .message-date {
+  font-size: 13px;
   margin: 0;
   padding: 0 1.25rem;
 }
@@ -42,4 +43,14 @@
 
 .message-date-left {
   align-self: flex-start;
+}
+
+.message-send-btn {
+  background-color: rgb(49, 117, 214);
+  color: white;
+}
+
+.message-send-btn:hover {
+  background-color: rgb(71, 140, 236);
+  color: white;
 }

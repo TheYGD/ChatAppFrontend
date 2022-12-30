@@ -1,14 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { jwtRequest } from '../utils/my-requests'
 import './Chats.css'
 import Chat from '../components/ChatPreview'
 import ActiveChat from '../components/ActiveChat'
 import Loading from '../components/Loading'
+import { AppContext } from '../App'
+import SockJS from 'sockjs-client/dist/sockjs'
+import Stomp from 'stompjs'
 
 const url = 'http://localhost:8080'
 const chatsUrl = url + '/api/chats'
 const getMessageUrlFromChatId = (chatId) =>
   url + `/api/chats/${chatId}/messages`
+const websocketUrl = url + '/ws/chats'
 const loadingIconHeight = 56
 
 async function loadChats(
@@ -47,7 +51,6 @@ async function sendMessage(chat, content, setContent) {
       }
     )
     .then((res) => {
-      console.log('message sent')
       setContent('')
     })
     .catch((err) => {
@@ -80,13 +83,38 @@ async function loadMessagesFromChat(
     })
 }
 
+function updatePageWithMessageFromWS(
+  chatAndMessage,
+  setChats,
+  setActiveChat,
+  setMessages,
+  scrollDownTheMessagesRef
+) {
+  const { chat, message } = chatAndMessage
+
+  setChats((prevChats) => {
+    return [chat, ...prevChats.filter((prevChat) => prevChat.id !== chat.id)]
+  })
+
+  // for unknown reason I can't pass activeChat because its always null, so iI have to get it this way
+  setActiveChat((activeChat) => {
+    if (activeChat?.id === chat.id) {
+      setMessages((prevMessages) => [...prevMessages, message])
+      setTimeout(() => scrollDownTheMessagesRef.current(), 1)
+    }
+    return activeChat
+  })
+}
+
 export default function Chats() {
   const [chats, setChats] = useState([])
   const [activeChat, setActiveChat] = useState(null)
   const [lastChat, setLastChat] = useState({})
   const [loadingInProgress, setLoadingInProgress] = useState(false)
   const [loadedAllChats, setLoadedAllChats] = useState(false)
+  const [messages, setMessages] = useState([])
   const chatsEl = useRef(null)
+  const { username } = useContext(AppContext)
   useEffect(() => {
     setLoadingInProgress(true)
     loadChats(
@@ -97,6 +125,28 @@ export default function Chats() {
       setLoadingInProgress
     )
   }, [])
+
+  useEffect(() => {
+    if (username === '') return
+    const socket = new SockJS(websocketUrl)
+    const stompClient = Stomp.over(socket)
+    stompClient.connect({}, function (frame) {
+      stompClient.subscribe('/topic/users/' + username, function (frame) {
+        const chatAndMessage = JSON.parse(frame.body)
+        updatePageWithMessageFromWS(
+          chatAndMessage,
+          setChats,
+          setActiveChat,
+          setMessages,
+          scrollDownTheMessagesRef
+        )
+      })
+    })
+    return () => {
+      console.log('effect removed')
+      stompClient.disconnect()
+    }
+  }, [username])
 
   async function onScrollChats() {
     const current = chatsEl.current
@@ -121,8 +171,10 @@ export default function Chats() {
     }
   }
 
+  const scrollDownTheMessagesRef = useRef(null)
+
   return (
-    <div className="container ">
+    <div className="container">
       <div className="row mt-5 chats">
         <div className="col-4">
           <div
@@ -153,8 +205,11 @@ export default function Chats() {
               <ActiveChat
                 key={activeChat.id}
                 chat={activeChat}
+                messages={messages}
+                setMessages={setMessages}
                 loadMessages={loadMessagesFromChat}
                 sendMessage={sendMessage}
+                scrollDownTheMessagesRef={scrollDownTheMessagesRef}
               />
             ) : (
               <h3 className="py-5 text-center">Click on a chat to open it</h3>
