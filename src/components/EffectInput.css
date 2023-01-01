@@ -16,10 +16,10 @@
 }
 
 .my-input-error {
-  padding: 1rem;
+  padding: 0.5rem;
   width: 100%;
   text-align: center;
   background-color: rgb(255, 196, 196);
   border: 1px solid red;
-  border-radius: 0.25rem;
+  border-radius: 5px;
 }

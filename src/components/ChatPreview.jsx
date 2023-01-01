@@ -40,10 +40,10 @@ function calculateDate(date) {
       else return xPassed + suffix + 's'
     }
   }
-  return ''
+  return 'now'
 }
 
-export default function Chat(props) {
+export default function ChatPreview(props) {
   const { chat, setActiveChat, selected } = props
   const { id, usersName, message, date } = chat
   const processedMessage = message

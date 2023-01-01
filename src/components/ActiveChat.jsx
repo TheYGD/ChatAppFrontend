@@ -117,7 +117,7 @@ export default function ActiveChat(props) {
       </div>
       <div className="row mx-0 mt-3">
         <textarea
-          className="col rounded-2 p-1 px-2"
+          className="message-send-box col"
           style={{ height: '5rem', resize: 'none' }}
           value={sendMessageContent}
           onChange={(event) => setSendMessageContent(event.target.value)}

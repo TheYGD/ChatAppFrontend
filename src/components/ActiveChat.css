@@ -45,6 +45,11 @@
   align-self: flex-start;
 }
 
+.message-send-box {
+  border: 1px solid #aaa;
+  border-radius: 5px;
+}
+
 .message-send-btn {
   background-color: rgb(49, 117, 214);
   color: white;
