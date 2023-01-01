@@ -1,10 +1,9 @@
 import axios from 'axios'
 
 const logoutIfBadLogin = (err) => {
-  console.log(err)
   if (err.response.status === 401) {
     location.href = location.origin + '/logout'
-  } else return new Promise(err)
+  } else throw err
 }
 
 function addAuthorizationToConfig(config) {
