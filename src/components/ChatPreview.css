@@ -4,11 +4,12 @@
   display: flex;
   align-items: center;
   padding: 0.5rem;
+  border-radius: 3px;
 }
 
 .chat:hover {
   cursor: pointer;
-  background-color: #eee;
+  background-color: rgb(230, 240, 255);
 }
 
 .chat-img {
@@ -51,8 +52,12 @@
 .chat-preview-active::before {
   content: '';
   position: absolute;
-  left: -0.75rem;
+  left: -0.5rem;
   width: 0.5rem;
   height: 3.5rem;
   background-color: rgb(49, 117, 214);
+}
+
+.chat-preview-active {
+  background-color: rgb(214, 231, 255);
 }

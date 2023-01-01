@@ -1,6 +1,6 @@
-import './MyInput.css'
+import './EffectInput.css'
 
-export default function MyInput(props) {
+export default function EffectInput(props) {
   const { name, type, inputObject } = props
   const {
     value,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Register.css'
-import MyInput from '../components/MyInput'
+import EffectInput from '../components/EffectInput'
 import axios from 'axios'
 import { InputObject } from '../classes/InputObject'
 import { Link } from 'react-router-dom'
@@ -167,14 +167,18 @@ export default function Register() {
           </Link>
           <h1 className="register-title">Create an account</h1>
           <form className="register-form">
-            <MyInput name="username" type="text" inputObject={usernameObj} />
-            <MyInput name="email" type="email" inputObject={emailObj} />
-            <MyInput
+            <EffectInput
+              name="username"
+              type="text"
+              inputObject={usernameObj}
+            />
+            <EffectInput name="email" type="email" inputObject={emailObj} />
+            <EffectInput
               name="password"
               type="password"
               inputObject={passwordObj}
             />
-            <MyInput
+            <EffectInput
               name="repeat password"
               type="password"
               inputObject={passwordRepeatObj}
