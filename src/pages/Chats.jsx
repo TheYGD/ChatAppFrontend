@@ -1,9 +1,10 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import { jwtRequest } from '../utils/my-requests'
 import './Chats.css'
-import Chat from '../components/ChatPreview'
+import ChatPreview from '../components/ChatPreview'
 import ActiveChat from '../components/ActiveChat'
 import Loading from '../components/Loading'
+import CreateChatElement from '../components/CreateChatElement'
 import { AppContext } from '../App'
 import SockJS from 'sockjs-client/dist/sockjs'
 import Stomp from 'stompjs'
@@ -182,8 +183,9 @@ export default function Chats() {
             className="chat-list"
             onScroll={() => onScrollChats()}
           >
+            <CreateChatElement />
             {chats.map((chat) => (
-              <Chat
+              <ChatPreview
                 selected={activeChat?.id === chat.id}
                 key={chat.id}
                 chat={chat}

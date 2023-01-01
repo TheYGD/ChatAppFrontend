@@ -6,6 +6,7 @@ import Register from './pages/Register'
 import Navbar from './components/Navbar'
 import Login from './pages/Login'
 import Logout from './pages/Logout'
+import CreateChat from './pages/CreateChat'
 import { jwtRequestNoCatch } from './utils/my-requests'
 import { removeJwt } from './utils/jwt-util'
 
@@ -71,6 +72,7 @@ function App() {
         </Route>
         <Route path="/" element={<AppWithNavbar />}>
           <Route index element={<Chats />} />
+          <Route path="/create-chat" element={<CreateChat />} />
           <Route path="/logout" element={<Logout />} />
         </Route>
       </Routes>
