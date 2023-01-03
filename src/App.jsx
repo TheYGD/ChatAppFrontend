@@ -9,6 +9,7 @@ import Logout from './pages/Logout'
 import CreateChat from './pages/CreateChat'
 import { jwtRequestNoCatch } from './utils/my-requests'
 import { removeJwt } from './utils/jwt-util'
+import OwnProfile from './pages/OwnProfile'
 
 export const AppContext = createContext()
 
@@ -73,6 +74,7 @@ function App() {
         <Route path="/" element={<AppWithNavbar />}>
           <Route index element={<Chats />} />
           <Route path="/create-chat" element={<CreateChat />} />
+          <Route path="/profile" element={<OwnProfile />} />
           <Route path="/logout" element={<Logout />} />
         </Route>
       </Routes>

@@ -1,0 +1,76 @@
+.own-profile {
+  margin: 2.5rem auto;
+  display: flex;
+  padding: 3rem 5rem;
+  border-radius: 5px;
+  box-shadow: 0px 0px 6px -2px rgba(66, 68, 90, 1);
+}
+
+.own-profile-image-box {
+  display: flex;
+  justify-content: center;
+}
+
+.own-profile-image-wrapper {
+  position: relative;
+}
+
+.own-profile-image {
+  object-fit: contain;
+  width: 15rem;
+  height: 15rem;
+  border: 1px solid #ddd;
+}
+
+.own-profile-image-input {
+  margin-top: 2rem;
+}
+
+.own-profile-info {
+  margin-left: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.own-profile-field-title {
+  margin: 0.25rem 0;
+  font-size: 14px;
+}
+
+.own-profile-field-value {
+  font-size: 18px;
+}
+
+.own-profile-remove-image-btn {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 0.25rem;
+  top: 0.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  background-color: rgb(234, 63, 63);
+  border: 1px solid white;
+  color: white;
+  font-size: 12px;
+}
+
+.own-profile-remove-image-btn:hover {
+  background-color: rgb(252, 102, 102);
+  color: white;
+}
+
+.own-profile-save-image-btn {
+  margin-top: 1rem;
+  background-color: rgb(49, 117, 214);
+  width: 5rem;
+  color: white;
+}
+
+.own-profile-save-image-btn:hover {
+  background-color: rgb(91, 151, 234);
+  color: white;
+}

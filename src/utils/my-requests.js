@@ -10,6 +10,7 @@ function addAuthorizationToConfig(config) {
   return {
     ...config,
     headers: {
+      ...config?.headers,
       Authorization: 'Bearer ' + localStorage.jwt,
     },
   }
