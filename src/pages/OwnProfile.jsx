@@ -1,9 +1,9 @@
 import { faRemove } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { jwtRequest } from '../utils/my-requests'
 import './OwnProfile.css'
+import defaultProfileImage from '../assets/default-profile-image.png'
 
 const url = 'http://localhost:8080'
 const userInfoUrl = url + '/api/profile/info'
@@ -16,8 +16,9 @@ export default function OwnProfile() {
   const [image, setImage] = useState(null)
   const [changedImage, setChangedImage] = useState(false)
 
-  let imageSource = ''
-  if (user.imageUrl) imageSource = imageUrlPrefix + user.imageUrl
+  let imageSource = defaultProfileImage
+  if (user.imageUrl && !changedImage)
+    imageSource = imageUrlPrefix + user.imageUrl
   else if (image) imageSource = URL.createObjectURL(image)
 
   useEffect(() => {
@@ -27,6 +28,7 @@ export default function OwnProfile() {
   }, [])
 
   function removeImage() {
+    console.log(user.imageUrl)
     setChangedImage(user.imageUrl != null) // true if there was image before
     setImage(null)
   }
@@ -50,12 +52,16 @@ export default function OwnProfile() {
         <div>
           <div className="own-profile-image-box">
             <div className="own-profile-image-wrapper">
-              <button
-                className="btn own-profile-remove-image-btn"
-                onClick={removeImage}
-              >
-                <FontAwesomeIcon icon={faRemove} />
-              </button>
+              {(!changedImage && user.imageUrl) || (changedImage && image) ? (
+                <button
+                  className="btn own-profile-remove-image-btn"
+                  onClick={removeImage}
+                >
+                  <FontAwesomeIcon icon={faRemove} />
+                </button>
+              ) : (
+                <></>
+              )}
               <img className="own-profile-image" src={imageSource} />
             </div>
           </div>
