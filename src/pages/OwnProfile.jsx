@@ -8,16 +8,17 @@ import './OwnProfile.css'
 const url = 'http://localhost:8080'
 const userInfoUrl = url + '/api/profile/info'
 const saveImageUrl = url + '/api/profile/image'
-const getLoadImageUrl = (username) => url + `/api/users/${username}/image`
+const imageUrlPrefix =
+  'https://jszmidla-chatapp.s3.eu-central-1.amazonaws.com/images/'
 
 export default function OwnProfile() {
   const [user, setUser] = useState({})
   const [image, setImage] = useState(null)
   const [changedImage, setChangedImage] = useState(false)
-  const navigate = useNavigate()
 
   let imageSource = ''
-  if (image) imageSource = URL.createObjectURL(image)
+  if (user.imageUrl) imageSource = imageUrlPrefix + user.imageUrl
+  else if (image) imageSource = URL.createObjectURL(image)
 
   useEffect(() => {
     jwtRequest.get(userInfoUrl, {}).then((res) => {
@@ -25,18 +26,8 @@ export default function OwnProfile() {
     })
   }, [])
 
-  useEffect(() => {
-    if (!user.username) return
-
-    jwtRequest
-      .get(getLoadImageUrl(user.username), { responseType: 'blob' })
-      .then((res) => {
-        setImage(res.data)
-      })
-  }, [user])
-
   function removeImage() {
-    setChangedImage(user.hasImage) // true if there was image before
+    setChangedImage(user.imageUrl != null) // true if there was image before
     setImage(null)
   }
 
@@ -49,7 +40,7 @@ export default function OwnProfile() {
       'Content-Type': 'multipart/form-data',
     }
     jwtRequest.post(saveImageUrl, data, { headers }).then((res) => {
-      navigate(0)
+      console.log(res)
     })
   }
 
