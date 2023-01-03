@@ -1,4 +1,8 @@
 import './ChatPreview.css'
+import defaultProfileImage from '../assets/default-profile-image.png'
+
+const imageUrlPrefix =
+  'https://jszmidla-chatapp.s3.eu-central-1.amazonaws.com/images/'
 
 const newChat = 'new'
 const minutesSuffix = ' min'
@@ -45,9 +49,12 @@ function calculateDate(date) {
 
 export default function ChatPreview(props) {
   const { chat, setActiveChat, selected } = props
-  const { id, usersName, message, date } = chat
+  const { id, usersName, usersImageUrl, message, date } = chat
   const processedMessage = message
   const processedDate = calculateDate(date)
+
+  let imageSource = defaultProfileImage
+  if (usersImageUrl) imageSource = imageUrlPrefix + usersImageUrl
 
   function openThisChat() {
     setActiveChat(chat)
@@ -57,7 +64,7 @@ export default function ChatPreview(props) {
 
   return (
     <li className={'chat ' + selectedClassName} onClick={openThisChat}>
-      <div className="chat-img"></div>
+      <img className="chat-img" src={imageSource} />
       <div className="chat-info">
         <h5 className="chat-name">{usersName}</h5>
         <div className="chat-messagebox row">
