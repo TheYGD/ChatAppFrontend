@@ -6,7 +6,7 @@ import { jwtRequest } from '../utils/my-requests'
 import './OwnProfile.css'
 
 const url = 'http://localhost:8080'
-const userInfoUrl = url + '/api/user/info'
+const userInfoUrl = url + '/api/profile/info'
 const saveImageUrl = url + '/api/profile/image'
 const getLoadImageUrl = (username) => url + `/api/users/${username}/image`
 
