@@ -6,148 +6,54 @@ import ActiveChat from '../components/ActiveChat'
 import Loading from '../components/Loading'
 import CreateChatElement from '../components/CreateChatElement'
 import { AppContext } from '../App'
-import SockJS from 'sockjs-client/dist/sockjs'
-import Stomp from 'stompjs'
 
 const url = 'http://localhost:8080'
 const chatsUrl = url + '/api/chats'
-const getMessageUrlFromChatId = (chatId) =>
-  url + `/api/chats/${chatId}/messages`
-const websocketUrl = url + '/ws/chats'
+const usersActiveStatusesUrl = url + '/api/users-active-status'
 const loadingIconHeight = 56
 
-async function loadChats(
-  setChats,
-  lastChat,
-  setLastChat,
-  setLoadedAllChats,
-  setLoadingInProgress
-) {
-  const params = { lastId: lastChat.id, lastDate: lastChat.date } // todo change
-  await jwtRequest
-    .get(chatsUrl, {
-      params: params,
-    })
-    .then((res) => {
-      const newChats = res.data
-      // all loaded
-      if (newChats.length == 0) {
-        setLoadedAllChats(true)
-        return
-      }
-      setChats((prevChats) => [...prevChats, ...newChats])
-      setLastChat(newChats[newChats.length - 1])
-      setLoadingInProgress(false)
-    })
-}
-
-async function sendMessage(chat, content, setContent) {
-  const params = { content }
-  await jwtRequest
-    .post(
-      getMessageUrlFromChatId(chat.id),
-      {},
-      {
-        params: params,
-      }
-    )
-    .then((res) => {
-      setContent('')
-    })
-    .catch((err) => {
-      console.log(err)
-      console.error('error: message not sent')
-    })
-}
-
-async function loadMessagesFromChat(
-  chat,
-  setMessages,
-  lastMessageId,
-  setLastMessageId,
-  setLoadedAllMessages
-) {
-  const params = { lastMessageId }
-  await jwtRequest
-    .get(getMessageUrlFromChatId(chat.id), {
-      params: params,
-    })
-    .then((res) => {
-      const newMessages = res.data
-      // all messages loaded?
-      if (!chat.firstMessageId || chat.firstMessageId === newMessages[0].id) {
-        setLoadedAllMessages(true)
-        if (newMessages.length === 0) return
-      }
-      setMessages((prevMessages) => [...newMessages, ...prevMessages])
-      setLastMessageId(newMessages[0].id)
-    })
-}
-
-function updatePageWithMessageFromWS(
-  chatAndMessage,
-  setChats,
-  setActiveChat,
-  setMessages,
-  scrollDownTheMessagesRef
-) {
-  const { chat, message } = chatAndMessage
-
-  setChats((prevChats) => {
-    return [chat, ...prevChats.filter((prevChat) => prevChat.id !== chat.id)]
-  })
-
-  // for unknown reason I can't pass activeChat because its always null, so iI have to get it this way
-  setActiveChat((activeChat) => {
-    if (activeChat?.id === chat.id) {
-      setMessages((prevMessages) => [...prevMessages, message])
-      setTimeout(() => scrollDownTheMessagesRef.current(), 1)
-    }
-    return activeChat
-  })
-}
-
 export default function Chats() {
-  const [chats, setChats] = useState([])
+  const {
+    chats,
+    setChats,
+    loadingChatsInProgress,
+    setLoadingChatsInProgress,
+    lastChat,
+    setLastChat,
+    loadedAllChats,
+    setLoadedAllChats,
+  } = useContext(AppContext)
+  const { handleMessageFromWSRef } = useContext(AppContext)
   const [activeChat, setActiveChat] = useState(null)
-  const [lastChat, setLastChat] = useState({})
-  const [loadingInProgress, setLoadingInProgress] = useState(false)
-  const [loadedAllChats, setLoadedAllChats] = useState(false)
-  const [messages, setMessages] = useState([])
   const chatsEl = useRef(null)
-  const { username } = useContext(AppContext)
+  const loadNewMessageFromWSRef = useRef()
+
   useEffect(() => {
-    setLoadingInProgress(true)
-    loadChats(
-      setChats,
-      lastChat,
-      setLastChat,
-      setLoadedAllChats,
-      setLoadingInProgress
-    )
+    handleMessageFromWSRef.current = (message) =>
+      updatePageWithMessageFromWS(
+        message,
+        setChats,
+        setActiveChat,
+        loadNewMessageFromWSRef.current
+      )
+
+    return () => {
+      handleMessageFromWSRef.current = null
+    }
   }, [])
 
   useEffect(() => {
-    if (username === '') return
-    const socket = new SockJS(websocketUrl)
-    const stompClient = Stomp.over(socket)
-    stompClient.connect({}, function (frame) {
-      stompClient.subscribe('/topic/users/' + username, function (frame) {
-        const chatAndMessage = JSON.parse(frame.body)
-        updatePageWithMessageFromWS(
-          chatAndMessage,
-          setChats,
-          setActiveChat,
-          setMessages,
-          scrollDownTheMessagesRef
-        )
-      })
-    })
+    if (chats?.length == 0) return
+
+    const updateUsersStatusesTimout = setTimeout(
+      async () => updateUsersStatuses(chats, setChats),
+      60 * 1000
+    )
+
     return () => {
-      console.log('effect removed')
-      stompClient.disconnect()
+      clearTimeout(updateUsersStatusesTimout)
     }
-  }, [username])
+  }, [chats])
 
   async function onScrollChats() {
     const current = chatsEl.current
@@ -159,20 +65,18 @@ export default function Chats() {
         16 <
         0 &&
       !loadedAllChats &&
-      !loadingInProgress
+      !loadingChatsInProgress
     ) {
-      setLoadingInProgress(true)
+      setLoadingChatsInProgress(true)
       await loadChats(
         setChats,
         lastChat,
         setLastChat,
         setLoadedAllChats,
-        setLoadingInProgress
+        setLoadingChatsInProgress
       )
     }
   }
-
-  const scrollDownTheMessagesRef = useRef(null)
 
   return (
     <div className="container">
@@ -192,7 +96,7 @@ export default function Chats() {
                 setActiveChat={setActiveChat}
               />
             ))}
-            {loadingInProgress && !loadedAllChats ? (
+            {loadingChatsInProgress && !loadedAllChats ? (
               <li>
                 <Loading />
               </li>
@@ -207,11 +111,7 @@ export default function Chats() {
               <ActiveChat
                 key={activeChat.id}
                 chat={activeChat}
-                messages={messages}
-                setMessages={setMessages}
-                loadMessages={loadMessagesFromChat}
-                sendMessage={sendMessage}
-                scrollDownTheMessagesRef={scrollDownTheMessagesRef}
+                loadNewMessageFromWSRef={loadNewMessageFromWSRef}
               />
             ) : (
               <h3 className="py-5 text-center">Click on a chat to open it</h3>
@@ -221,4 +121,74 @@ export default function Chats() {
       </div>
     </div>
   )
+}
+
+export async function loadChats(
+  setChats,
+  lastChat,
+  setLastChat,
+  setLoadedAllChats,
+  setLoadingInProgress
+) {
+  const params = { lastId: lastChat.id, lastDate: lastChat.lastInteractionDate }
+  await jwtRequest
+    .get(chatsUrl, {
+      params: params,
+    })
+    .then((res) => {
+      const newChats = res.data
+      // all loaded
+      if (newChats.length == 0) {
+        setLoadedAllChats(true)
+        return
+      }
+      setChats((prevChats) => [...prevChats, ...newChats])
+      setLastChat(newChats[newChats.length - 1])
+      setLoadingInProgress(false)
+    })
+}
+
+function updatePageWithMessageFromWS(
+  chatAndMessage,
+  setChats,
+  setActiveChat,
+  loadNewMessageFromWS
+) {
+  const { chat, message } = chatAndMessage
+
+  setChats((prevChats) => [
+    chat,
+    ...prevChats.filter((prevChat) => prevChat.id !== chat.id),
+  ])
+
+  // for unknown reason I can't pass activeChat because its always null, so iI have to get it this way
+  setActiveChat((activeChat) => {
+    if (activeChat?.id === chat.id) {
+      loadNewMessageFromWS(message)
+    }
+    return activeChat
+  })
+}
+
+async function updateUsersStatuses(chats, setChats) {
+  const usersIds = chats.map((chat) => chat.usersId)
+  const urlParams = new URLSearchParams(usersIds.map((id) => ['usersIds', id]))
+
+  let newChats
+  await jwtRequest
+    .get(usersActiveStatusesUrl, { params: urlParams })
+    .then((res) => {
+      newChats = chats.map((chat) => {
+        const newLastActiveDate = res.data[chat.usersId]
+        return {
+          ...chat,
+          lastActiveDate: newLastActiveDate,
+        }
+      })
+    })
+    .catch((err) => {
+      newChats = chats
+    })
+
+  setChats(newChats)
 }
