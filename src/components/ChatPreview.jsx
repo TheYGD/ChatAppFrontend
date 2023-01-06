@@ -47,11 +47,37 @@ function calculateDate(date) {
   return 'now'
 }
 
+function createActiveStatusBadge(lastActive) {
+  if (!lastActive) return <i className="chat-active-badge"></i>
+
+  const lastActiveDate = new Date(lastActive)
+  const minutesFromNow = Math.floor((new Date() - lastActiveDate) / (60 * 1000))
+  const hoursFromNow = Math.floor(minutesFromNow / 60)
+
+  // if its more than 24 full hours - long time ago
+  let timeAgo
+  if (hoursFromNow > 24) return <></>
+  if (hoursFromNow >= 1)
+    timeAgo = hoursFromNow + ' ' + hoursSuffix + (hoursFromNow != 1 ? 's' : '')
+  else if (minutesFromNow > 1)
+    timeAgo = minutesFromNow + ' ' + minutesSuffix + 's'
+  else timeAgo = 1 + ' ' + minutesSuffix
+
+  return <i className="chat-inactive-badge">{timeAgo}</i>
+}
+
 export default function ChatPreview(props) {
   const { chat, setActiveChat, selected } = props
-  const { id, usersName, usersImageUrl, message, date } = chat
+  const {
+    id,
+    usersName,
+    usersImageUrl,
+    message,
+    lastInteractionDate,
+    lastActiveDate,
+  } = chat
   const processedMessage = message
-  const processedDate = calculateDate(date)
+  const processedDate = calculateDate(lastInteractionDate)
 
   let imageSource = defaultProfileImage
   if (usersImageUrl) imageSource = imageUrlPrefix + usersImageUrl
@@ -61,10 +87,14 @@ export default function ChatPreview(props) {
   }
 
   const selectedClassName = selected ? 'chat-preview-active' : ''
+  const activeStatusBadge = createActiveStatusBadge(lastActiveDate)
 
   return (
     <li className={'chat ' + selectedClassName} onClick={openThisChat}>
-      <img className="chat-img" src={imageSource} />
+      <div className="chat-img-box">
+        <img className="chat-img" src={imageSource} />
+        {activeStatusBadge}
+      </div>
       <div className="chat-info">
         <h5 className="chat-name">{usersName}</h5>
         <div className="chat-messagebox row">

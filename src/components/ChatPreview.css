@@ -17,12 +17,39 @@
   background-color: rgb(230, 240, 255);
 }
 
+.chat-img-box {
+  position: relative;
+}
+
 .chat-img {
   width: 2.5rem;
   height: 2.5rem;
   object-fit: contain;
   border-radius: 50%;
   border: 1px solid #ccc;
+}
+
+.chat-active-badge {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  bottom: 0;
+  right: 0;
+  background-color: rgb(86, 245, 61);
+  border-radius: 50%;
+}
+
+.chat-inactive-badge {
+  position: absolute;
+  height: 1rem;
+  bottom: -6px;
+  right: -8px;
+  background-color: #999;
+  color: white;
+  border-radius: 0.5rem;
+  font-size: 9px;
+  line-height: 1rem;
+  padding: 0 4px 0 3px;
 }
 
 .chat-info {

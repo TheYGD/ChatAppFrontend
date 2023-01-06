@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { jwtRequest } from '../utils/my-requests'
 import './ActiveChat.css'
+import { jwtRequest } from '../utils/my-requests'
+
+const url = 'http://localhost:8080'
+const getMessageUrlFromChatId = (chatId) =>
+  url + `/api/chats/${chatId}/messages`
 
 function processMessageDate(date) {
   const now = new Date()
@@ -8,8 +12,8 @@ function processMessageDate(date) {
 
   // same day, show just time
   if (
-    now.getDate() === messageDate.getDate() ||
-    now.getMonth() === messageDate.getMonth() ||
+    now.getDate() === messageDate.getDate() &&
+    now.getMonth() === messageDate.getMonth() &&
     now.getFullYear() === messageDate.getFullYear()
   ) {
     return messageDate.toLocaleTimeString().substring(0, 5)
@@ -37,14 +41,8 @@ function Message(props) {
 }
 
 export default function ActiveChat(props) {
-  const {
-    chat,
-    messages,
-    setMessages,
-    loadMessages,
-    sendMessage,
-    scrollDownTheMessagesRef,
-  } = props
+  const { chat, loadNewMessageFromWSRef } = props
+  const [messages, setMessages] = useState([])
   const [lastMessageId, setLastMessageId] = useState(null)
   const [loadedAllMessages, setLoadedAllMessages] = useState(false)
   const [sendMessageContent, setSendMessageContent] = useState('')
@@ -52,25 +50,31 @@ export default function ActiveChat(props) {
   const chatViewEl = useRef(null)
 
   useEffect(() => {
-    scrollDownTheMessagesRef.current = scrollDownTheMessagesIfSeesMostRecent
+    loadNewMessageFromWSRef.current = loadNewMessageFromWS
 
-    setMessages([])
     loadMessages(
       chat,
       setMessages,
       lastMessageId,
       setLastMessageId,
       setLoadedAllMessages
-    ).then(() => {
-      setTimeout(() => {
-        chatViewEl.current.scrollTop = chatViewEl.current.scrollHeight
-      }, 1)
-    })
+    ).then(() => scrollDownTheMessagesIfSeesMostRecent())
+
+    return () => {
+      loadNewMessageFromWSRef.current = null
+    }
   }, [])
+
+  function loadNewMessageFromWS(message) {
+    setMessages((prevMessages) => [...prevMessages, message])
+    scrollDownTheMessagesIfSeesMostRecent()
+  }
 
   /** Scroll only is the user sees most recent message aka scrollbar is at the lowest possible position */
   function scrollDownTheMessagesIfSeesMostRecent() {
-    chatViewEl.current.scrollTop = chatViewEl.current.scrollHeight
+    const action = () =>
+      (chatViewEl.current.scrollTop = chatViewEl.current.scrollHeight)
+    setTimeout(action, 1)
     // todo ONLY IF ITS OUTS
   }
 
@@ -131,4 +135,41 @@ export default function ActiveChat(props) {
       </div>
     </>
   )
+}
+
+async function loadMessages(
+  chat,
+  setMessages,
+  lastMessageId,
+  setLastMessageId,
+  setLoadedAllMessages
+) {
+  const params = { lastMessageId }
+  await jwtRequest
+    .get(getMessageUrlFromChatId(chat.id), {
+      params: params,
+    })
+    .then((res) => {
+      const newMessages = res.data
+      // all messages loaded?
+      if (!chat.firstMessageId || chat.firstMessageId === newMessages[0].id) {
+        setLoadedAllMessages(true)
+        if (newMessages.length === 0) return
+      }
+      setMessages((prevMessages) => [...newMessages, ...prevMessages])
+      setLastMessageId(newMessages[0].id)
+    })
+}
+
+async function sendMessage(chat, content, setContent) {
+  const params = { content }
+  await jwtRequest
+    .post(getMessageUrlFromChatId(chat.id), {}, { params })
+    .then((res) => {
+      setContent('')
+    })
+    .catch((err) => {
+      console.log(err)
+      console.error('error: message not sent')
+    })
 }

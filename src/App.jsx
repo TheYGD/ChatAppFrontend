@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react'
+import { createContext, useState, useEffect, useRef } from 'react'
 import { Routes, Route, Outlet, useNavigate } from 'react-router-dom'
 import './App.css'
 import Chats from './pages/Chats'
@@ -7,14 +7,16 @@ import Navbar from './components/Navbar'
 import Login from './pages/Login'
 import Logout from './pages/Logout'
 import CreateChat from './pages/CreateChat'
-import { jwtRequestNoCatch } from './utils/my-requests'
-import { removeJwt } from './utils/jwt-util'
+import { jwtRequest } from './utils/my-requests'
 import OwnProfile from './pages/OwnProfile'
+import { loadChats } from './pages/Chats'
+import { StompService } from './classes/StompService'
 
 export const AppContext = createContext()
 
 const url = 'http://localhost:8080'
-const urlGetUsername = url + '/api/get-username'
+const getUsernameUrl = url + '/api/get-username'
+const websocketUrl = url + '/ws/chats'
 
 function AppWithNavbar() {
   return (
@@ -35,34 +37,59 @@ function AppWithoutNavbar() {
   )
 }
 
-function App() {
+export default function App() {
   const [username, setUsername] = useState('')
   const [jwt, setJwt] = useState('')
+  const [chats, setChats] = useState([])
+  const [loadingChatsInProgress, setLoadingChatsInProgress] = useState(false)
+  const [lastChat, setLastChat] = useState({})
+  const [loadedAllChats, setLoadedAllChats] = useState(false)
+  const handleMessageFromWSRef = useRef()
   const appContextValue = {
     username,
     setUsername,
     jwt,
     setJwt,
+    chats,
+    setChats,
+    handleMessageFromWSRef,
+    loadingChatsInProgress,
+    setLoadingChatsInProgress,
+    lastChat,
+    setLastChat,
+    loadedAllChats,
+    setLoadedAllChats,
   }
+  const [stompService, setStompService] = useState()
   const navigate = useNavigate()
 
   useEffect(() => {
-    loadUsernameIfLoggedIn()
-
-    function loadUsernameIfLoggedIn() {
-      if (localStorage.jwt) {
-        setJwt(localStorage.jwt)
-        jwtRequestNoCatch
-          .get(urlGetUsername)
-          .then((res) => {
-            if (res.status === 200) setUsername(res.data)
-          })
-          .catch((err) => {
-            if (err.response.status === 401) removeJwt(setJwt, setUsername)
-          })
-      } else navigate('/login')
-    }
+    loadUsernameIfHasJwt(appContextValue, getUsernameUrl, navigate)
   }, [])
+
+  useEffect(() => {
+    if (!username) return
+
+    setStompService(new StompService(appContextValue, websocketUrl))
+  }, [username])
+
+  useEffect(() => {
+    if (!stompService) return
+
+    stompService.establishStompConnection()
+    setLoadingChatsInProgress(true)
+    loadChats(
+      setChats,
+      {},
+      setLastChat,
+      setLoadedAllChats,
+      setLoadingChatsInProgress
+    )
+
+    return () => {
+      stompService.closeStompConnection()
+    }
+  }, [stompService])
 
   return (
     <AppContext.Provider value={appContextValue}>
@@ -82,4 +109,16 @@ function App() {
   )
 }
 
-export default App
+function loadUsernameIfHasJwt(appContextValue, getUsernameUrl, navigate) {
+  const { setJwt, setUsername } = appContextValue
+  const jwt = localStorage.jwt
+
+  if (jwt) {
+    setJwt(jwt)
+    jwtRequest.get(getUsernameUrl).then((res) => {
+      if (res.status === 200) setUsername(res.data)
+    })
+  } else {
+    navigate('/login')
+  }
+}
