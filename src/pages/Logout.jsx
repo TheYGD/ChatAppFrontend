@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useContext, useEffect } from 'react'
 import { AppContext } from '../App'
-import { removeJwt } from '../utils/jwt-util'
 
 export default function Logout() {
   const { setJwt, setUsername } = useContext(AppContext)
@@ -11,4 +10,10 @@ export default function Logout() {
     removeJwt(setJwt, setUsername)
     navigate('/login')
   }, [])
+}
+
+function removeJwt(setJwt, setUsername) {
+  setJwt(null)
+  setUsername(null)
+  localStorage.removeItem('jwt')
 }
