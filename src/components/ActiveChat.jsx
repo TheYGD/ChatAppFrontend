@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import './ActiveChat.css'
 import Message from './Message'
 import { jwtRequest } from '../utils/my-requests'
+import { NotificationContext } from '../App'
+import { Notification } from '../classes/Notification'
 
 const url = 'http://localhost:8080'
 const getMessageUrlFromChatId = (chatId) =>
@@ -21,6 +23,7 @@ export default function ActiveChat(props) {
   // const lastReadMessageRef = useRef(0)
   const markMessageAsReadTimoutRef = useRef()
   const [chat, setChat] = useState({})
+  const { pushNotification } = useContext(NotificationContext)
 
   useEffect(() => {
     setChat(props.chat)
@@ -31,7 +34,8 @@ export default function ActiveChat(props) {
       setMessages,
       lastMessageId,
       setLastMessageId,
-      setLoadedAllMessages
+      setLoadedAllMessages,
+      pushNotification
     ).then(() => scrollDownTheMessagesIfSeesMostRecent())
 
     return () => {
@@ -63,17 +67,23 @@ export default function ActiveChat(props) {
   async function sendMessageIfPossible() {
     if (!sendingInProgress) {
       setSendingInProgress(true)
-      await sendMessage(chat, sendMessageContent, setSendMessageContent)
+      await sendMessage(
+        chat,
+        sendMessageContent,
+        setSendMessageContent,
+        pushNotification
+      )
       setSendingInProgress(false)
     }
   }
 
   function changeLastReadMessageOnTheServer(message) {
     const params = { messageId: message.id }
-    jwtRequest.post(getMessageReadUrlFromChatId(chat.id), {}, { params })
-    // .then((res) => {
-    //   setChat((prevChat) => ({ ...prevChat, lastReadMessageId: message.id }))
-    // })
+    jwtRequest
+      .post(getMessageReadUrlFromChatId(chat.id), {}, { params })
+      .catch((err) => {
+        console.error(err)
+      })
   }
 
   async function onScrollChatView() {
@@ -88,7 +98,8 @@ export default function ActiveChat(props) {
         setMessages,
         lastMessageId,
         setLastMessageId,
-        setLoadedAllMessages
+        setLoadedAllMessages,
+        pushNotification
       )
       setTimeout(() => {
         chatViewEl.current.scrollTop =
@@ -146,7 +157,8 @@ async function loadMessages(
   setMessages,
   lastMessageId,
   setLastMessageId,
-  setLoadedAllMessages
+  setLoadedAllMessages,
+  pushNotification
 ) {
   const params = { lastMessageId }
   await jwtRequest
@@ -163,9 +175,13 @@ async function loadMessages(
       setMessages((prevMessages) => [...newMessages, ...prevMessages])
       setLastMessageId(newMessages[0].id)
     })
+    .catch((err) => {
+      const notification = Notification.error()
+      pushNotification(notification)
+    })
 }
 
-async function sendMessage(chat, content, setContent) {
+async function sendMessage(chat, content, setContent, pushNotification) {
   const params = { content }
   await jwtRequest
     .post(getMessageUrlFromChatId(chat.id), {}, { params })
@@ -173,8 +189,8 @@ async function sendMessage(chat, content, setContent) {
       setContent('')
     })
     .catch((err) => {
-      console.log(err)
-      console.error('error: message not sent')
+      const notification = Notification.error()
+      pushNotification(notification)
     })
 }
 

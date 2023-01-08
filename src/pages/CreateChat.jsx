@@ -6,6 +6,8 @@ import { jwtRequest } from '../utils/my-requests'
 import { useState, useContext } from 'react'
 import { AppContext } from '../components/AppWithNavbarAndConnection'
 import defaultProfileImage from '../assets/default-profile-image.png'
+import { NotificationContext } from '../App'
+import { Notification } from '../classes/Notification'
 
 const imageUrlPrefix =
   'https://jszmidla-chatapp.s3.eu-central-1.amazonaws.com/images/'
@@ -13,6 +15,9 @@ const imageUrlPrefix =
 const url = 'http://localhost:8080'
 const searchForUserUrl = url + '/api/users-by-phrase'
 const createChatUrl = url + '/api/chats'
+
+const CREATED_CHAT_NOTIFICATION_MESSAGE = 'Created chat'
+const REPEATED_CHAT_NOTIFICATION_MESSAGE = 'Chat with this user already exists'
 
 function User(props) {
   const { id, username, createChatWithId, imageUrl } = props
@@ -49,6 +54,7 @@ export default function CreateChat() {
   const [pageNr, setPageNr] = useState(0)
   const [pageCount, setPageCount] = useState(0)
   const [searched, setSearched] = useState(false)
+  const { pushNotification } = useContext(NotificationContext)
   const navigate = useNavigate()
 
   function createChatWithId(id) {
@@ -58,10 +64,20 @@ export default function CreateChat() {
     jwtRequest
       .post(createChatUrl, {}, { params })
       .then((res) => {
+        const notification = Notification.success(
+          CREATED_CHAT_NOTIFICATION_MESSAGE
+        )
+        pushNotification(notification)
         navigate('/')
       })
       .catch((err) => {
-        if (err.response.status === 409) navigate('/') // todo open this chat
+        if (err.response.status === 409) {
+          const notification = Notification.fail(
+            REPEATED_CHAT_NOTIFICATION_MESSAGE
+          )
+          pushNotification(notification)
+          navigate('/') // todo open this chat
+        }
       })
   }
 
@@ -71,13 +87,19 @@ export default function CreateChat() {
       phrase: searchPhrase,
       pageNr: pageRequest,
     }
-    jwtRequest.get(searchForUserUrl, { params }).then((res) => {
-      const { content: users, totalPages } = res.data
-      setSearched(true)
-      setFoundUsers(users)
-      setPageCount(totalPages)
-      setPageNr(pageRequest)
-    })
+    jwtRequest
+      .get(searchForUserUrl, { params })
+      .then((res) => {
+        const { content: users, totalPages } = res.data
+        setSearched(true)
+        setFoundUsers(users)
+        setPageCount(totalPages)
+        setPageNr(pageRequest)
+      })
+      .catch((err) => {
+        const notification = Notification.error()
+        pushNotification(notification)
+      })
   }
 
   function goToPreviousPage() {
