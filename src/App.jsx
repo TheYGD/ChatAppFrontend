@@ -44,7 +44,7 @@ export default function App() {
   const [loadingChatsInProgress, setLoadingChatsInProgress] = useState(false)
   const [lastChat, setLastChat] = useState({})
   const [loadedAllChats, setLoadedAllChats] = useState(false)
-  const handleMessageFromWSRef = useRef()
+  const updatePageWithMessageFromWSRef = useRef()
   const appContextValue = {
     username,
     setUsername,
@@ -52,7 +52,7 @@ export default function App() {
     setJwt,
     chats,
     setChats,
-    handleMessageFromWSRef,
+    updatePageWithMessageFromWSRef,
     loadingChatsInProgress,
     setLoadingChatsInProgress,
     lastChat,
@@ -70,7 +70,9 @@ export default function App() {
   useEffect(() => {
     if (!username) return
 
-    setStompService(new StompService(appContextValue, websocketUrl))
+    setStompService(
+      new StompService(appContextValue, handleMessageFromWS, websocketUrl)
+    )
   }, [username])
 
   useEffect(() => {
@@ -90,6 +92,27 @@ export default function App() {
       stompService.closeStompConnection()
     }
   }, [stompService])
+
+  function handleMessageFromWS(chatAndMessage) {
+    const { chat, message } = chatAndMessage
+
+    console.log(chat)
+    if (message || !chat.firstMessageId) {
+      setChats((prevChats) => [
+        chat,
+        ...prevChats.filter((prevChat) => prevChat.id !== chat.id),
+      ])
+    } else {
+      setChats((prevChats) => [
+        ...prevChats.map((prevChat) =>
+          prevChat.id !== chat.id ? prevChat : chat
+        ),
+      ])
+    }
+
+    if (updatePageWithMessageFromWSRef.current)
+      updatePageWithMessageFromWSRef.current(chatAndMessage)
+  }
 
   return (
     <AppContext.Provider value={appContextValue}>

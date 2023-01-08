@@ -75,6 +75,8 @@ export default function ChatPreview(props) {
     message,
     lastInteractionDate,
     lastActiveDate,
+    lastReadMessageIdByOther,
+    lastReadMessageIdByThis,
   } = chat
   const processedMessage = message
   const processedDate = calculateDate(lastInteractionDate)
@@ -88,6 +90,7 @@ export default function ChatPreview(props) {
 
   const selectedClassName = selected ? 'chat-preview-active' : ''
   const activeStatusBadge = createActiveStatusBadge(lastActiveDate)
+  const isUnread = lastReadMessageIdByThis < lastReadMessageIdByOther
 
   return (
     <li className={'chat ' + selectedClassName} onClick={openThisChat}>
@@ -99,9 +102,16 @@ export default function ChatPreview(props) {
         <h5 className="chat-name">{usersName}</h5>
         <div className="chat-messagebox row">
           <p className="chat-messagebox-date col-4">{processedDate}</p>
-          <p className="chat-messagebox-message col">{processedMessage}</p>
+          <p
+            className={
+              'chat-messagebox-message col ' + (isUnread ? 'fw-bold' : '')
+            }
+          >
+            {processedMessage}
+          </p>
         </div>
       </div>
+      {isUnread && <i className="chat-unread-icon"></i>}
     </li>
   )
 }

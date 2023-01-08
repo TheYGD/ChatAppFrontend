@@ -2,8 +2,9 @@ import SockJS from 'sockjs-client/dist/sockjs'
 import Stomp from 'stompjs'
 
 export class StompService {
-  constructor(appContext, websocketUrl) {
+  constructor(appContext, handleMessageFromWS, websocketUrl) {
     this.websocketUrl = websocketUrl
+    this.handleMessageFromWS = handleMessageFromWS
     for (const property in appContext) {
       this[property] = appContext[property]
     }
@@ -21,8 +22,7 @@ export class StompService {
           '/topic/users/' + stompService.username,
           function (frame) {
             const wsMessage = JSON.parse(frame.body)
-            if (stompService.handleMessageFromWSRef.current)
-              stompService.handleMessageFromWSRef.current(wsMessage)
+            stompService.handleMessageFromWS(wsMessage)
           }
         )
       }

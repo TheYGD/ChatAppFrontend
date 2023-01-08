@@ -1,59 +1,33 @@
 import { useEffect, useRef, useState } from 'react'
 import './ActiveChat.css'
+import Message from './Message'
 import { jwtRequest } from '../utils/my-requests'
 
 const url = 'http://localhost:8080'
 const getMessageUrlFromChatId = (chatId) =>
   url + `/api/chats/${chatId}/messages`
-
-function processMessageDate(date) {
-  const now = new Date()
-  const messageDate = new Date(date)
-
-  // same day, show just time
-  if (
-    now.getDate() === messageDate.getDate() &&
-    now.getMonth() === messageDate.getMonth() &&
-    now.getFullYear() === messageDate.getFullYear()
-  ) {
-    return messageDate.toLocaleTimeString().substring(0, 5)
-  } else {
-    // different day, show full date
-    return (
-      messageDate.toLocaleDateString() +
-      ' ' +
-      messageDate.toLocaleTimeString().substring(0, 5)
-    )
-  }
-}
-
-function Message(props) {
-  const { content, date, sent } = props
-  const processedDate = processMessageDate(date)
-  const side = sent ? 'right' : 'left'
-
-  return (
-    <>
-      <p className={'col-6 message message-' + side}>{content}</p>
-      <p className={'message-date message-date-' + side}>{processedDate}</p>
-    </>
-  )
-}
+const getMessageReadUrlFromChatId = (chatId) =>
+  url + `/api/chats/${chatId}/message-read`
 
 export default function ActiveChat(props) {
-  const { chat, loadNewMessageFromWSRef } = props
+  const { updateChatAndNewMessageFromWSRef } = props
   const [messages, setMessages] = useState([])
   const [lastMessageId, setLastMessageId] = useState(null)
   const [loadedAllMessages, setLoadedAllMessages] = useState(false)
   const [sendMessageContent, setSendMessageContent] = useState('')
   const [sendingInProgress, setSendingInProgress] = useState(false)
+  const checkIfVisibleArrayRef = useRef([])
   const chatViewEl = useRef(null)
+  // const lastReadMessageRef = useRef(0)
+  const markMessageAsReadTimoutRef = useRef()
+  const [chat, setChat] = useState({})
 
   useEffect(() => {
-    loadNewMessageFromWSRef.current = loadNewMessageFromWS
+    setChat(props.chat)
+    updateChatAndNewMessageFromWSRef.current = updateChatAndNewMessageFromWS
 
     loadMessages(
-      chat,
+      props.chat,
       setMessages,
       lastMessageId,
       setLastMessageId,
@@ -61,20 +35,28 @@ export default function ActiveChat(props) {
     ).then(() => scrollDownTheMessagesIfSeesMostRecent())
 
     return () => {
-      loadNewMessageFromWSRef.current = null
+      updateChatAndNewMessageFromWSRef.current = null
     }
   }, [])
 
-  function loadNewMessageFromWS(message) {
-    setMessages((prevMessages) => [...prevMessages, message])
-    scrollDownTheMessagesIfSeesMostRecent()
+  function updateChatAndNewMessageFromWS(chatAndMessage) {
+    const { chat, message } = chatAndMessage
+
+    setTimeout(() => setChat(chat), 0)
+
+    if (message) {
+      setTimeout(() => {
+        setMessages((prevMessages) => [...prevMessages, message])
+        scrollDownTheMessagesIfSeesMostRecent()
+      }, 0)
+    }
   }
 
   /** Scroll only is the user sees most recent message aka scrollbar is at the lowest possible position */
   function scrollDownTheMessagesIfSeesMostRecent() {
     const action = () =>
       (chatViewEl.current.scrollTop = chatViewEl.current.scrollHeight)
-    setTimeout(action, 1)
+    setTimeout(action, 0)
     // todo ONLY IF ITS OUTS
   }
 
@@ -86,7 +68,19 @@ export default function ActiveChat(props) {
     }
   }
 
+  function changeLastReadMessageOnTheServer(message) {
+    const params = { messageId: message.id }
+    jwtRequest.post(getMessageReadUrlFromChatId(chat.id), {}, { params })
+    // .then((res) => {
+    //   setChat((prevChat) => ({ ...prevChat, lastReadMessageId: message.id }))
+    // })
+  }
+
   async function onScrollChatView() {
+    runChecksForUnreadMessages(
+      chatViewEl.current,
+      checkIfVisibleArrayRef.current
+    )
     if (chatViewEl.current.scrollTop == 0 && !loadedAllMessages) {
       const scrollHeightBefore = chatViewEl.current.scrollHeight
       await loadMessages(
@@ -116,7 +110,17 @@ export default function ActiveChat(props) {
           <></>
         )}
         {messages.map((message) => (
-          <Message key={message.id} {...message} />
+          <Message
+            key={message.id}
+            message={message}
+            otherUsersImageUrl={chat.usersImageUrl}
+            chatId={chat.id}
+            scrollViewRef={chatViewEl}
+            markMessageAsReadTimoutRef={markMessageAsReadTimoutRef}
+            lastReadByThisId={chat.lastReadMessageIdByThis}
+            lastReadByOtherId={chat.lastReadMessageIdByOther}
+            changeLastReadMessageOnTheServer={changeLastReadMessageOnTheServer}
+          />
         ))}
       </div>
       <div className="row mx-0 mt-3">
@@ -172,4 +176,26 @@ async function sendMessage(chat, content, setContent) {
       console.log(err)
       console.error('error: message not sent')
     })
+}
+
+function runChecksForUnreadMessages(
+  scrollView,
+  checkIfVisibleArray,
+  lastReadMessageIdRef,
+  markMessageAsReadTimourRef
+) {
+  const unreadArrayFromNewest = checkIfVisibleArray.reverse()
+  for (let i = unreadArrayFromNewest.length - 1; i >= 0; i--) {
+    const { id, func } = unreadArrayFromNewest[i]
+
+    if (id > lastReadMessageIdRef.current) {
+      if (markMessageAsReadTimourRef.current)
+        clearTimeout(markMessageAsReadTimourRef.current)
+      lastReadMessageIdRef.current = id
+      markMessageAsReadTimourRef.current = setTimeout(
+        () => func(scrollView),
+        100
+      )
+    }
+  }
 }

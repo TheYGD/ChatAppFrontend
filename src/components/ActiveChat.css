@@ -5,44 +5,11 @@
   flex-direction: column;
   padding: 1rem 1.5rem;
   height: 100%;
-}
-
-.message {
-  border-radius: 5px;
-  margin: 1rem 1rem 0.25rem 1rem;
-  padding: 1rem;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-}
-
-.message-right {
-  color: white;
-  background: #6dafff;
-  align-self: end;
-}
-
-.message-left {
-  border: 1px #daeaff solid;
-  background: #f8fbff;
-  align-self: start;
+  position: relative;
 }
 
 .chat-beginning {
-  margin: 1rem;
-}
-
-.message-date {
-  font-size: 13px;
-  margin: 0;
-  padding: 0 1.25rem;
-}
-
-.message-date-right {
-  align-self: flex-end;
-}
-
-.message-date-left {
-  align-self: flex-start;
+  margin: 0.5rem 0 1.5rem 0;
 }
 
 .message-send-box {
