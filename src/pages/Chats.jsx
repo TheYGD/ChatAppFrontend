@@ -23,22 +23,21 @@ export default function Chats() {
     loadedAllChats,
     setLoadedAllChats,
   } = useContext(AppContext)
-  const { handleMessageFromWSRef } = useContext(AppContext)
+  const { updatePageWithMessageFromWSRef } = useContext(AppContext)
   const [activeChat, setActiveChat] = useState(null)
   const chatsEl = useRef(null)
-  const loadNewMessageFromWSRef = useRef()
+  const updateChatAndNewMessageFromWSRef = useRef()
 
   useEffect(() => {
-    handleMessageFromWSRef.current = (message) =>
+    updatePageWithMessageFromWSRef.current = (chatAndMessage) =>
       updatePageWithMessageFromWS(
-        message,
-        setChats,
+        chatAndMessage,
         setActiveChat,
-        loadNewMessageFromWSRef.current
+        updateChatAndNewMessageFromWSRef.current
       )
 
     return () => {
-      handleMessageFromWSRef.current = null
+      updatePageWithMessageFromWSRef.current = null
     }
   }, [])
 
@@ -111,7 +110,9 @@ export default function Chats() {
               <ActiveChat
                 key={activeChat.id}
                 chat={activeChat}
-                loadNewMessageFromWSRef={loadNewMessageFromWSRef}
+                updateChatAndNewMessageFromWSRef={
+                  updateChatAndNewMessageFromWSRef
+                }
               />
             ) : (
               <h3 className="py-5 text-center">Click on a chat to open it</h3>
@@ -150,21 +151,15 @@ export async function loadChats(
 
 function updatePageWithMessageFromWS(
   chatAndMessage,
-  setChats,
   setActiveChat,
-  loadNewMessageFromWS
+  updateChatAndNewMessageFromWS
 ) {
-  const { chat, message } = chatAndMessage
-
-  setChats((prevChats) => [
-    chat,
-    ...prevChats.filter((prevChat) => prevChat.id !== chat.id),
-  ])
+  const { chat } = chatAndMessage
 
   // for unknown reason I can't pass activeChat because its always null, so iI have to get it this way
   setActiveChat((activeChat) => {
     if (activeChat?.id === chat.id) {
-      loadNewMessageFromWS(message)
+      updateChatAndNewMessageFromWS(chatAndMessage)
     }
     return activeChat
   })

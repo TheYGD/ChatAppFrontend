@@ -26,7 +26,8 @@
   height: 2.5rem;
   object-fit: contain;
   border-radius: 50%;
-  border: 1px solid #ccc;
+  border: 1px solid #bbb;
+  background-color: white;
 }
 
 .chat-active-badge {
@@ -93,4 +94,14 @@
 
 .chat-preview-active {
   background-color: rgb(214, 231, 255);
+}
+
+.chat-unread-icon {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.4rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background-color: rgb(60, 129, 226);
 }
