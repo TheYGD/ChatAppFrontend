@@ -6,6 +6,8 @@ import ActiveChat from '../components/ActiveChat'
 import Loading from '../components/Loading'
 import CreateChatElement from '../components/CreateChatElement'
 import { AppContext } from '../components/AppWithNavbarAndConnection'
+import { NotificationContext } from '../App'
+import { Notification } from '../classes/Notification'
 
 const url = 'http://localhost:8080'
 const chatsUrl = url + '/api/chats'
@@ -24,6 +26,7 @@ export default function Chats() {
     setLoadedAllChats,
   } = useContext(AppContext)
   const { updatePageWithMessageFromWSRef } = useContext(AppContext)
+  const { pushNotification } = useContext(NotificationContext)
   const [activeChat, setActiveChat] = useState(null)
   const chatsEl = useRef(null)
   const updateChatAndNewMessageFromWSRef = useRef()
@@ -45,7 +48,7 @@ export default function Chats() {
     if (chats?.length == 0) return
 
     const updateUsersStatusesTimout = setTimeout(
-      async () => updateUsersStatuses(chats, setChats),
+      async () => updateUsersStatuses(chats, setChats, pushNotification),
       60 * 1000
     )
 
@@ -72,7 +75,8 @@ export default function Chats() {
         lastChat,
         setLastChat,
         setLoadedAllChats,
-        setLoadingChatsInProgress
+        setLoadingChatsInProgress,
+        pushNotification
       )
     }
   }
@@ -129,7 +133,8 @@ export async function loadChats(
   lastChat,
   setLastChat,
   setLoadedAllChats,
-  setLoadingInProgress
+  setLoadingInProgress,
+  pushNotification
 ) {
   const params = { lastId: lastChat.id, lastDate: lastChat.lastInteractionDate }
   await jwtRequest
@@ -146,6 +151,10 @@ export async function loadChats(
       setChats((prevChats) => [...prevChats, ...newChats])
       setLastChat(newChats[newChats.length - 1])
       setLoadingInProgress(false)
+    })
+    .catch((err) => {
+      const notification = Notification.error()
+      pushNotification(notification)
     })
 }
 
@@ -165,7 +174,7 @@ function updatePageWithMessageFromWS(
   })
 }
 
-async function updateUsersStatuses(chats, setChats) {
+async function updateUsersStatuses(chats, setChats, pushNotification) {
   const usersIds = chats.map((chat) => chat.usersId)
   const urlParams = new URLSearchParams(usersIds.map((id) => ['usersIds', id]))
 
@@ -182,6 +191,8 @@ async function updateUsersStatuses(chats, setChats) {
       })
     })
     .catch((err) => {
+      const notification = Notification.error()
+      pushNotification(notification)
       newChats = chats
     })
 

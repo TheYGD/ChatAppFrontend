@@ -1,10 +1,13 @@
 import { faRemove } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { jwtRequest } from '../utils/my-requests'
-import { useNavigate } from 'react-router-dom'
 import './OwnProfile.css'
 import defaultProfileImage from '../assets/default-profile-image.png'
+import { NotificationContext } from '../App'
+import { Notification } from '../classes/Notification'
+
+const UPDATED_IMAGE_NOTIFICATION_MESSAGE = 'Updated profile image.'
 
 const url = 'http://localhost:8080'
 const userInfoUrl = url + '/api/profile/info'
@@ -16,7 +19,8 @@ export default function OwnProfile() {
   const [user, setUser] = useState({})
   const [image, setImage] = useState(null)
   const [changedImage, setChangedImage] = useState(false)
-  const navigate = useNavigate()
+  const [changedImageOnTheServer, setChangedImageOnTheServer] = useState(false)
+  const { pushNotification } = useContext(NotificationContext)
 
   let imageSource = defaultProfileImage
   if (user.imageUrl && !changedImage)
@@ -24,10 +28,17 @@ export default function OwnProfile() {
   else if (image) imageSource = URL.createObjectURL(image)
 
   useEffect(() => {
-    jwtRequest.get(userInfoUrl, {}).then((res) => {
-      setUser(res.data)
-    })
-  }, [])
+    setChangedImageOnTheServer(false)
+    jwtRequest
+      .get(userInfoUrl, {})
+      .then((res) => {
+        setUser(res.data)
+      })
+      .catch((err) => {
+        const notification = Notification.error()
+        pushNotification(notification)
+      })
+  }, [changedImageOnTheServer])
 
   function removeImage() {
     setChangedImage(user.imageUrl != null) // true if there was image before
@@ -42,9 +53,19 @@ export default function OwnProfile() {
     const headers = {
       'Content-Type': 'multipart/form-data',
     }
-    jwtRequest.post(saveImageUrl, data, { headers }).then((res) => {
-      navigate(0)
-    })
+    jwtRequest
+      .post(saveImageUrl, data, { headers })
+      .then((res) => {
+        const notification = Notification.success(
+          UPDATED_IMAGE_NOTIFICATION_MESSAGE
+        )
+        pushNotification(notification)
+        setChangedImageOnTheServer(true)
+      })
+      .catch((err) => {
+        const notification = Notification.error()
+        pushNotification(notification)
+      })
   }
 
   return (

@@ -1,9 +1,11 @@
 import Navbar from './Navbar'
-import { useState, useEffect, useRef, createContext } from 'react'
+import { useState, useEffect, useRef, createContext, useContext } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { loadChats } from '../pages/Chats'
 import { StompService } from '../classes/StompService'
 import { jwtRequest } from '../utils/my-requests'
+import { NotificationContext } from '../App'
+import { Notification } from '../classes/Notification'
 
 const url = 'http://localhost:8080'
 const getUsernameUrl = url + '/api/get-username'
@@ -35,10 +37,16 @@ export default function AppWithNavbarAndConnection() {
     setLoadedAllChats,
   }
   const [stompService, setStompService] = useState()
+  const { pushNotification } = useContext(NotificationContext)
   const navigate = useNavigate()
 
   useEffect(() => {
-    loadUsernameIfHasJwt(appContextValue, getUsernameUrl, navigate)
+    loadUsernameIfHasJwt(
+      appContextValue,
+      getUsernameUrl,
+      navigate,
+      pushNotification
+    )
   }, [])
 
   useEffect(() => {
@@ -59,7 +67,8 @@ export default function AppWithNavbarAndConnection() {
       {},
       setLastChat,
       setLoadedAllChats,
-      setLoadingChatsInProgress
+      setLoadingChatsInProgress,
+      pushNotification
     )
 
     return () => {
@@ -99,15 +108,26 @@ export default function AppWithNavbarAndConnection() {
   )
 }
 
-function loadUsernameIfHasJwt(appContextValue, getUsernameUrl, navigate) {
+function loadUsernameIfHasJwt(
+  appContextValue,
+  getUsernameUrl,
+  navigate,
+  pushNotification
+) {
   const { setJwt, setUsername } = appContextValue
   const jwt = localStorage.jwt
 
   if (jwt) {
     setJwt(jwt)
-    jwtRequest.get(getUsernameUrl).then((res) => {
-      if (res.status === 200) setUsername(res.data)
-    })
+    jwtRequest
+      .get(getUsernameUrl)
+      .then((res) => {
+        if (res.status === 200) setUsername(res.data)
+      })
+      .catch((err) => {
+        const notification = Notification.error()
+        pushNotification(notification)
+      })
   } else {
     navigate('/login')
   }
