@@ -1,9 +1,7 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import './Login.css'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
-import { AppContext } from '../App'
 
 const LOGIN_SERVER_ERROR_MESSAGE = 'Some error occured'
 const LOGIN_BAD_ERROR_MESSAGE = 'Wrong username or password'
@@ -19,7 +17,6 @@ export default function Login() {
   const [errorLogin, setErrorLogin] = useState(false)
 
   const navigate = useNavigate()
-  const { setJwt, setUsername } = useContext(AppContext)
 
   useEffect(() => {
     if (localStorage.jwt) {
@@ -44,17 +41,7 @@ export default function Login() {
   }
 
   function saveJwtToLocalstorage(response) {
-    setJwt(response.data.jwt)
     localStorage.setItem('jwt', response.data.jwt)
-    axios
-      .get(urlGetUsername, {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.jwt,
-        },
-      })
-      .then((res) => {
-        if (res.status === 200) setUsername(res.data)
-      })
   }
 
   function clearLoginErrors() {

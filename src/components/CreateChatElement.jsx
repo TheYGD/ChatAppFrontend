@@ -6,7 +6,7 @@ export default function CreateChatElement(props) {
   const navigate = useNavigate()
 
   return (
-    <li className="create-chat">
+    <div className="create-chat">
       <div
         className="create-chat-clickable"
         onClick={() => navigate('/create-chat ')}
@@ -14,6 +14,6 @@ export default function CreateChatElement(props) {
         <img className="create-chat-img" src={plusIcon} />
         <h6 className="create-chat-title">Create chat</h6>
       </div>
-    </li>
+    </div>
   )
 }
