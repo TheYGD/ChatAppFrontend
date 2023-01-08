@@ -1,3 +1,7 @@
+.back-to-chats-link {
+  text-decoration: none;
+}
+
 .create-chat-users-content {
   margin-top: 1rem;
   padding-left: 1.75rem;

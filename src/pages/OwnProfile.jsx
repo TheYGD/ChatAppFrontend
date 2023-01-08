@@ -2,6 +2,7 @@ import { faRemove } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from 'react'
 import { jwtRequest } from '../utils/my-requests'
+import { useNavigate } from 'react-router-dom'
 import './OwnProfile.css'
 import defaultProfileImage from '../assets/default-profile-image.png'
 
@@ -15,6 +16,7 @@ export default function OwnProfile() {
   const [user, setUser] = useState({})
   const [image, setImage] = useState(null)
   const [changedImage, setChangedImage] = useState(false)
+  const navigate = useNavigate()
 
   let imageSource = defaultProfileImage
   if (user.imageUrl && !changedImage)
@@ -42,7 +44,7 @@ export default function OwnProfile() {
       'Content-Type': 'multipart/form-data',
     }
     jwtRequest.post(saveImageUrl, data, { headers }).then((res) => {
-      console.log(res)
+      navigate(0)
     })
   }
 
