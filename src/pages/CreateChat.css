@@ -64,10 +64,12 @@
 }
 
 .user-img {
-  min-width: 2.5rem;
+  width: 2.5rem;
   height: 2.5rem;
-  background-color: aqua;
-  border-radius: 1000px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 1px solid #bbb;
+  background-color: white;
 }
 
 .user-name {

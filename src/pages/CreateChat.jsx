@@ -5,20 +5,27 @@ import { faPlus, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { jwtRequest } from '../utils/my-requests'
 import { useState, useContext } from 'react'
 import { AppContext } from '../components/AppWithNavbarAndConnection'
+import defaultProfileImage from '../assets/default-profile-image.png'
+
+const imageUrlPrefix =
+  'https://jszmidla-chatapp.s3.eu-central-1.amazonaws.com/images/'
 
 const url = 'http://localhost:8080'
 const searchForUserUrl = url + '/api/users-by-phrase'
 const createChatUrl = url + '/api/chats'
 
 function User(props) {
-  const { id, username, createChatWithId } = props
+  const { id, username, createChatWithId, imageUrl } = props
   const loggedUser = useContext(AppContext)
+
+  let imageSource = defaultProfileImage
+  if (imageUrl) imageSource = imageUrlPrefix + imageUrl
 
   return (
     <li className="col-3">
       <div className="user row">
         <div className="user-info col-9">
-          <div className="user-img"></div>
+          <img className="user-img" src={imageSource} />
           <h5 className="user-name">{username}</h5>
         </div>
         {loggedUser.username != username ? (
