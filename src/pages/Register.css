@@ -1,8 +1,8 @@
 .register-box {
   padding: 3rem 6rem;
-  background-color: rgb(228, 238, 255);
+  background-color: #f1f7ff;
   border-radius: 0.5rem;
-  box-shadow: 1px 1px 15px -5px rgba(66, 68, 90, 1);
+  box-shadow: 0px 0px 6px -2px rgba(66, 68, 90, 1);
 }
 
 .register-form {

@@ -30,6 +30,6 @@ export class StompService {
   }
 
   closeStompConnection() {
-    stompClient.disconnect()
+    this.stompClient.disconnect()
   }
 }

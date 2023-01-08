@@ -30,7 +30,6 @@ export default function OwnProfile() {
   }, [])
 
   function removeImage() {
-    console.log(user.imageUrl)
     setChangedImage(user.imageUrl != null) // true if there was image before
     setImage(null)
   }

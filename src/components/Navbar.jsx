@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useContext } from 'react'
-import { AppContext } from '../App'
+import { AppContext } from './AppWithNavbarAndConnection'
 import './Navbar.css'
 
 export default function Navbar() {

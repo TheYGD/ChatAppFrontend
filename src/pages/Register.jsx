@@ -28,8 +28,8 @@ export default function Register() {
     usernameValid,
     setUsernameValid,
     (newValue) => newValue.length <= 30,
-    () => username.length >= 8,
-    'Username must be 8-30 chars long',
+    () => username.length >= 6,
+    'Username must be 6-30 chars long',
     usernameServerValid,
     setUsernameServerValid,
     () => checkIfUsernameIsNotTaken(username),
@@ -114,7 +114,7 @@ export default function Register() {
     if (!validateInputs(username, email, password, passwordRepeat)) {
       return
     }
-    console.log(123)
+
     let registerRequestBody = {
       username: username,
       email: email,
@@ -154,7 +154,6 @@ export default function Register() {
       return false
     }
 
-    console.log('poszlo')
     return true
   }
 

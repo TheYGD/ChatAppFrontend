@@ -5,7 +5,7 @@ import ChatPreview from '../components/ChatPreview'
 import ActiveChat from '../components/ActiveChat'
 import Loading from '../components/Loading'
 import CreateChatElement from '../components/CreateChatElement'
-import { AppContext } from '../App'
+import { AppContext } from '../components/AppWithNavbarAndConnection'
 
 const url = 'http://localhost:8080'
 const chatsUrl = url + '/api/chats'
@@ -79,7 +79,7 @@ export default function Chats() {
 
   return (
     <div className="container">
-      <div className="row mt-5 chats">
+      <div className="row chats">
         <div className="col-4">
           <div
             ref={chatsEl}

@@ -33,25 +33,14 @@ export default function Message(props) {
         clearTimeout(markMessageAsReadTimoutRef.current.timeout)
       const markAsReadTimeoutObject = {
         id: id,
-        timeout: setTimeout(() => markAsRead(scrollViewRef.current), 200),
+        timeout: setTimeout(
+          () => changeLastReadMessageOnTheServer(message),
+          200
+        ),
       }
       markMessageAsReadTimoutRef.current = markAsReadTimeoutObject
     }
   }, [])
-
-  /***  TO DO ZROBIC -- SPRAWDZIC PRZY LADOWANIU CZY NALEZYC WYSWIETIC WIADOMOSC, NIE TU */
-  function markAsRead(scrollView) {
-    // console.log(contentP.current, scrollView)
-    // const contentOffsetTopInView =
-    //   contentP.current.offsetTop - scrollView.offsetTop
-    // // it is visible
-    // if (
-    //   contentOffsetTopInView >= scrollView.scrollTop &&
-    //   contentOffsetTopInView <= scrollView.scrollTop + scrollView.clientHeight
-    // ) {
-    changeLastReadMessageOnTheServer(message)
-    // }
-  }
 
   return (
     <div className={'col-6 message-' + side}>
@@ -66,20 +55,6 @@ export default function Message(props) {
       )}
     </div>
   )
-
-  // function addToCheckIfVisibleArray() {
-  //   const visibleArrayElement = { id: id, func: ifVisibleThenSetAsRead }
-  //   checkIfVisibleArrayRef.current = [
-  //     ...checkIfVisibleArrayRef.current,
-  //     visibleArrayElement,
-  //   ]
-  // }
-
-  // function deleteFromCheckIfVisibleArray() {
-  //   checkIfVisibleArrayRef.current = checkIfVisibleArrayRef.current.filter(
-  //     (el) => el.id !== id
-  //   )
-  // }
 }
 
 function processMessageDate(date) {
