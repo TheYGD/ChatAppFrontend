@@ -114,7 +114,7 @@ export default function Register() {
     if (!validateInputs(username, email, password, passwordRepeat)) {
       return
     }
-    console.log(123)
+
     let registerRequestBody = {
       username: username,
       email: email,
@@ -154,7 +154,6 @@ export default function Register() {
       return false
     }
 
-    console.log('poszlo')
     return true
   }
 

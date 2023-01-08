@@ -17,7 +17,6 @@ export default function EffectInput(props) {
   } = inputObject
 
   function onChangeWithValidation(newValue) {
-    console.log('onChange')
     if (!onChangePredicate(newValue)) setValid(false)
     else {
       setValid(true)

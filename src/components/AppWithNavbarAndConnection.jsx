@@ -70,7 +70,6 @@ export default function AppWithNavbarAndConnection() {
   function handleMessageFromWS(chatAndMessage) {
     const { chat, message } = chatAndMessage
 
-    console.log(chat)
     if (message || !chat.firstMessageId) {
       setChats((prevChats) => [
         chat,
@@ -104,7 +103,6 @@ function loadUsernameIfHasJwt(appContextValue, getUsernameUrl, navigate) {
   const { setJwt, setUsername } = appContextValue
   const jwt = localStorage.jwt
 
-  console.log('hehe')
   if (jwt) {
     setJwt(jwt)
     jwtRequest.get(getUsernameUrl).then((res) => {

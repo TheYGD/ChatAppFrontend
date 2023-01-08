@@ -93,8 +93,6 @@ export default function ChatPreview(props) {
   const isUnread = lastReadMessageIdByThis < lastReadMessageIdByOther
   const showMessage = message
 
-  console.log(chat)
-
   return (
     <li className={'chat ' + selectedClassName} onClick={openThisChat}>
       <div className="chat-img-box">

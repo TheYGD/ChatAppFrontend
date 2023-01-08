@@ -11,7 +11,6 @@ const searchForUserUrl = url + '/api/users-by-phrase'
 const createChatUrl = url + '/api/chats'
 
 function User(props) {
-  console.log(props)
   const { id, username, createChatWithId } = props
   const loggedUser = useContext(AppContext)
 
