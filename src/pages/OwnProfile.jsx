@@ -6,10 +6,11 @@ import './OwnProfile.css'
 import defaultProfileImage from '../assets/default-profile-image.png'
 import { NotificationContext } from '../App'
 import { Notification } from '../classes/Notification'
+import { config } from '../config/app-config'
 
 const UPDATED_IMAGE_NOTIFICATION_MESSAGE = 'Updated profile image.'
 
-const url = 'http://localhost:8080'
+const url = config.url
 const userInfoUrl = url + '/api/profile/info'
 const saveImageUrl = url + '/api/profile/image'
 const imageUrlPrefix =

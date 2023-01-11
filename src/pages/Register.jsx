@@ -5,8 +5,9 @@ import EffectInput from '../components/EffectInput'
 import axios from 'axios'
 import { InputObject } from '../classes/InputObject'
 import { Link } from 'react-router-dom'
+import { config } from '../config/app-config'
 
-const url = 'http://localhost:8080'
+const url = config.url
 const registerUrl = url + '/api/register'
 const usernameExistsUrl = registerUrl + '/username-exists'
 const emailExistsUrl = registerUrl + '/email-exists'

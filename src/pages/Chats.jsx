@@ -8,8 +8,9 @@ import CreateChatElement from '../components/CreateChatElement'
 import { AppContext } from '../components/AppWithNavbarAndConnection'
 import { NotificationContext } from '../App'
 import { Notification } from '../classes/Notification'
+import { config } from '../config/app-config'
 
-const url = 'http://localhost:8080'
+const url = config.url
 const chatsUrl = url + '/api/chats'
 const usersActiveStatusesUrl = url + '/api/users-active-status'
 const loadingIconHeight = 56

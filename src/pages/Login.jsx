@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react'
 import './Login.css'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { config } from '../config/app-config'
 
 const LOGIN_SERVER_ERROR_MESSAGE = 'Some error occured'
 const LOGIN_BAD_ERROR_MESSAGE = 'Wrong username or password'
 
-const url = 'http://localhost:8080'
+const url = config.url
 const loginUrl = url + '/api/login'
-const urlGetUsername = url + '/api/get-username'
 
 export default function Login() {
   const [login, setLogin] = useState('')

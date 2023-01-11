@@ -16,7 +16,7 @@ function calculateDate(date) {
   if (!date) return newChat
 
   const now = new Date()
-  const messageDate = new Date(date)
+  const messageDate = new Date(date + 'Z')
   const secondsPast = (now - messageDate) / 1000
 
   const timeArray = [
@@ -50,7 +50,7 @@ function calculateDate(date) {
 function createActiveStatusBadge(lastActive) {
   if (!lastActive) return <i className="chat-active-badge"></i>
 
-  const lastActiveDate = new Date(lastActive)
+  const lastActiveDate = new Date(lastActive + 'Z')
   const minutesFromNow = Math.floor((new Date() - lastActiveDate) / (60 * 1000))
   const hoursFromNow = Math.floor(minutesFromNow / 60)
 
