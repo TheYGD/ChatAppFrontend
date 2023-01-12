@@ -8,7 +8,7 @@ const newChat = 'new'
 const minutesSuffix = ' min'
 const hoursSuffix = ' hr'
 const daysSuffix = ' day'
-const weeksSuffix = ' ws'
+const weeksSuffix = ' wk'
 const monthsSuffix = ' mth'
 const yearsSuffix = ' yr'
 

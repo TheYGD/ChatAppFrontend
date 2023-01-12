@@ -137,7 +137,10 @@ export async function loadChats(
   setLoadingInProgress,
   pushNotification
 ) {
-  const params = { lastId: lastChat.id, lastDate: lastChat.lastInteractionDate }
+  const params = {
+    lastId: lastChat.id,
+    lastDate: lastChat.lastInteractionDate?.toUTCString(),
+  }
   await jwtRequest
     .get(chatsUrl, {
       params: params,
