@@ -9,7 +9,6 @@ export default function Message(props) {
   const {
     otherUsersImageUrl,
     message,
-    scrollViewRef,
     markMessageAsReadTimoutRef,
     lastReadByThisId,
     lastReadByOtherId,
@@ -59,7 +58,7 @@ export default function Message(props) {
 
 function processMessageDate(date) {
   const now = new Date()
-  const messageDate = new Date(date)
+  const messageDate = new Date(date + 'Z')
 
   // same day, show just time
   if (

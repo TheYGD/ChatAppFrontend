@@ -4,8 +4,9 @@ import Message from './Message'
 import { jwtRequest } from '../utils/my-requests'
 import { NotificationContext } from '../App'
 import { Notification } from '../classes/Notification'
+import { config } from '../config/app-config'
 
-const url = 'http://localhost:8080'
+const url = config.url
 const getMessageUrlFromChatId = (chatId) =>
   url + `/api/chats/${chatId}/messages`
 const getMessageReadUrlFromChatId = (chatId) =>
