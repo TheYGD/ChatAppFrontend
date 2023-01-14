@@ -1,0 +1,25 @@
+.confirm-hint {
+  font-style: italic;
+  color: rgb(49, 117, 214);
+}
+
+.confirm-title {
+  margin-top: 1rem;
+}
+.confirm-description {
+}
+.confirm-activate-btn {
+  width: 80%;
+  margin-top: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #999;
+  height: 3rem;
+  font-size: 16px;
+  background-color: rgb(82, 143, 229);
+  color: white;
+}
+
+.confirm-activate-btn:hover {
+  background-color: rgb(69, 132, 219);
+  cursor: pointer;
+}

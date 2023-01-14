@@ -6,6 +6,7 @@ import axios from 'axios'
 import { InputObject } from '../classes/InputObject'
 import { Link } from 'react-router-dom'
 import { config } from '../config/app-config'
+import ConfirmRegistration from '../components/ConfirmRegistration'
 
 const url = config.url
 const registerUrl = url + '/api/register'
@@ -14,6 +15,7 @@ const emailExistsUrl = registerUrl + '/email-exists'
 
 export default function Register() {
   const [registered, setRegistered] = useState(false)
+  const [token, setToken] = useState()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -123,7 +125,10 @@ export default function Register() {
     }
 
     axios.post(registerUrl, registerRequestBody).then((response) => {
-      if (response.status == 200) setRegistered(true)
+      if (response.status == 200) {
+        setToken(response.data)
+        setRegistered(true)
+      }
     })
   }
 
@@ -190,11 +195,7 @@ export default function Register() {
         </>
       ) : (
         <>
-          <h2>Account registered</h2>
-          <p>Now you can log in</p>
-          <Link to="/login" className="register-login-link">
-            <p style={{ marginLeft: 0 }}>Login</p>
-          </Link>
+          <ConfirmRegistration token={token} />
         </>
       )}
     </div>
