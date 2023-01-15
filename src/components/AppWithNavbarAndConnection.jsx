@@ -8,7 +8,7 @@ import { NotificationContext } from '../App'
 import { Notification } from '../classes/Notification'
 import { config } from '../config/app-config'
 
-const url = config.url
+const url = config.backendUrl
 const getUsernameUrl = url + '/api/get-username'
 const websocketUrl = url + '/ws/chats'
 

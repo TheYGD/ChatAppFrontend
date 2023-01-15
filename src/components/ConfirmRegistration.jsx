@@ -7,7 +7,7 @@ import { Notification } from '../classes/Notification'
 import { Link } from 'react-router-dom'
 
 export default function ConfirmRegistration(props) {
-  const activateUrl = config.url + '/api/register/confirm'
+  const activateUrl = config.backendUrl + '/api/register/confirm'
   const { token } = props
   const [confirmed, setConfirmed] = useState(false)
 
