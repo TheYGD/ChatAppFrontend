@@ -7,7 +7,7 @@ import { config } from '../config/app-config'
 const LOGIN_SERVER_ERROR_MESSAGE = 'Some error occured'
 const LOGIN_BAD_ERROR_MESSAGE = 'Wrong username or password'
 
-const url = config.url
+const url = config.backendUrl
 const loginUrl = url + '/api/login'
 
 export default function Login() {

@@ -13,7 +13,7 @@ import { config } from '../config/app-config'
 const imageUrlPrefix =
   'https://jszmidla-chatapp.s3.eu-central-1.amazonaws.com/images/'
 
-const url = config.url
+const url = config.backendUrl
 const searchForUserUrl = url + '/api/users-by-phrase'
 const createChatUrl = url + '/api/chats'
 

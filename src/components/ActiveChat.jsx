@@ -5,20 +5,20 @@ import { jwtRequest } from '../utils/my-requests'
 import { NotificationContext } from '../App'
 import { Notification } from '../classes/Notification'
 import { config } from '../config/app-config'
+import MessageInputBox from './MessageInputBox'
 
-const url = config.url
+const url = config.backendUrl
 const getMessageUrlFromChatId = (chatId) =>
   url + `/api/chats/${chatId}/messages`
 const getMessageReadUrlFromChatId = (chatId) =>
   url + `/api/chats/${chatId}/message-read`
+const imageUrlPrefix = config.awsBucketUrl + 'images/'
 
 export default function ActiveChat(props) {
   const { updateChatAndNewMessageFromWSRef } = props
   const [messages, setMessages] = useState([])
   const [lastMessageId, setLastMessageId] = useState(null)
   const [loadedAllMessages, setLoadedAllMessages] = useState(false)
-  const [sendMessageContent, setSendMessageContent] = useState('')
-  const [sendingInProgress, setSendingInProgress] = useState(false)
   const checkIfVisibleArrayRef = useRef([])
   const chatViewEl = useRef(null)
   // const lastReadMessageRef = useRef(0)
@@ -135,20 +135,7 @@ export default function ActiveChat(props) {
           />
         ))}
       </div>
-      <div className="row mx-0 mt-3">
-        <textarea
-          className="message-send-box col"
-          style={{ height: '5rem', resize: 'none' }}
-          value={sendMessageContent}
-          onChange={(event) => setSendMessageContent(event.target.value)}
-        ></textarea>
-        <button
-          className="btn message-send-btn col-1 ms-4 my-auto"
-          onClick={sendMessageIfPossible}
-        >
-          Send
-        </button>
-      </div>
+      <MessageInputBox chat={chat} />
     </>
   )
 }
@@ -175,19 +162,6 @@ async function loadMessages(
       }
       setMessages((prevMessages) => [...newMessages, ...prevMessages])
       setLastMessageId(newMessages[0].id)
-    })
-    .catch((err) => {
-      const notification = Notification.error()
-      pushNotification(notification)
-    })
-}
-
-async function sendMessage(chat, content, setContent, pushNotification) {
-  const params = { content }
-  await jwtRequest
-    .post(getMessageUrlFromChatId(chat.id), {}, { params })
-    .then((res) => {
-      setContent('')
     })
     .catch((err) => {
       const notification = Notification.error()

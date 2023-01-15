@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 import { config } from '../config/app-config'
 import ConfirmRegistration from '../components/ConfirmRegistration'
 
-const url = config.url
+const url = config.backendUrl
 const registerUrl = url + '/api/register'
 const usernameExistsUrl = registerUrl + '/username-exists'
 const emailExistsUrl = registerUrl + '/email-exists'

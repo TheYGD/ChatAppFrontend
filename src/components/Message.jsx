@@ -1,6 +1,8 @@
 import './Message.css'
 import { useRef, useEffect } from 'react'
 import defaultProfileImage from '../assets/default-profile-image.png'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFile } from '@fortawesome/free-solid-svg-icons'
 
 const imageUrlPrefix =
   'https://jszmidla-chatapp.s3.eu-central-1.amazonaws.com/images/'
@@ -14,7 +16,7 @@ export default function Message(props) {
     lastReadByOtherId,
     changeLastReadMessageOnTheServer,
   } = props
-  const { id, content, date, sent } = message
+  const { id, content, date, sent, text: isText } = message
   const processedDate = processMessageDate(date)
   const side = sent ? 'right' : 'left'
   const contentP = useRef(null)
@@ -43,9 +45,13 @@ export default function Message(props) {
 
   return (
     <div className={'col-6 message-' + side}>
-      <p ref={contentP} className="message-content">
-        {content}
-      </p>
+      {isText ? (
+        <p ref={contentP} className="message-content">
+          {content}
+        </p>
+      ) : (
+        <File name={content} />
+      )}
       <p className="message-date">{processedDate}</p>
       {lastReadByOtherId == id && (
         <div className="message-read-image-box">
@@ -75,4 +81,23 @@ function processMessageDate(date) {
       messageDate.toLocaleTimeString().substring(0, 5)
     )
   }
+}
+
+function File(props) {
+  const { name } = props
+  const extension = name.substring(name.lastIndexOf('.') + 1)
+  const url = imageUrlPrefix + name
+
+  const isImage = ['png', 'svg', 'jpg', 'jpeg', 'gif', 'bmp'].includes(
+    extension
+  )
+
+  return isImage ? (
+    <img className="message-image" src={url} />
+  ) : (
+    <div className="message-file">
+      <FontAwesomeIcon className="message-file-icon" icon={faFile} />
+      <a href={url}>{name}</a>
+    </div>
+  )
 }

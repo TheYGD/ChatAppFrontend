@@ -10,7 +10,7 @@ import { NotificationContext } from '../App'
 import { Notification } from '../classes/Notification'
 import { config } from '../config/app-config'
 
-const url = config.url
+const url = config.backendUrl
 const chatsUrl = url + '/api/chats'
 const usersActiveStatusesUrl = url + '/api/users-active-status'
 const loadingIconHeight = 56

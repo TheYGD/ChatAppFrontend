@@ -1,0 +1,146 @@
+.messagebox {
+  position: relative;
+  margin: 1rem 0 0 0;
+}
+
+.messagebox-images {
+  position: absolute;
+  display: flex;
+  width: calc(100% - 4px);
+  margin-left: 2px;
+  margin-top: 2px;
+  background-color: white;
+  height: 5rem;
+  padding: 7px 0.5rem;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  border-radius: 5px;
+}
+
+.messagebox-uploaded-image-box {
+  position: relative;
+  min-width: 3.5rem;
+  min-height: 3.5rem;
+  max-width: 3.5rem;
+  max-height: 3.5rem;
+  margin-right: 0.5rem;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  padding: 3px;
+}
+
+.messagebox-uploaded-file-box {
+  position: relative;
+  min-width: 6rem;
+  min-height: 3.5rem;
+  max-width: 6rem;
+  max-height: 3.5rem;
+  margin-right: 0.5rem;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  padding: 3px;
+  overflow: hidden;
+}
+
+.messagebox-uploaded-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.messagebox-uploaded-file-name {
+  height: 100%;
+}
+
+.messagebox-input {
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  width: 100%;
+  padding: 3px 8px;
+}
+
+.messagebox-btn {
+  position: relative;
+  background-color: rgb(49, 117, 214);
+  color: white;
+}
+
+.messagebox-btn:hover {
+  background-color: rgb(71, 140, 236);
+  color: white;
+}
+
+.messagebox-image-remove-btn {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 2px;
+  top: 2px;
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  background-color: rgb(234, 63, 63);
+  border: 1px solid white;
+  color: white;
+  font-size: 12px;
+}
+
+.dropzone {
+  position: relative;
+  padding: 0;
+}
+
+.dropzone-on-drag {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: calc(100% - 0.5rem);
+  background-color: rgba(50, 107, 187, 0.5);
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: white;
+}
+
+.dropzone-click {
+  width: 2rem;
+  height: 2rem;
+  background-color: coral;
+}
+
+.messagebox-buttons {
+  margin-left: 1rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.messagebox-file-upload {
+  margin-top: -0.5rem;
+  margin-bottom: 0.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+}
+
+.messagebox-file-upload:hover {
+  background-color: rgb(224, 228, 234);
+  border: 1px solid #ccc;
+}
+
+.messagebox-file-upload > input {
+  display: none;
+}
+
+.messagebox-loading {
+  position: absolute;
+  display: inline;
+  right: -2.25rem;
+  bottom: 6px;
+}

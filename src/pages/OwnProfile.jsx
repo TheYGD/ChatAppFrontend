@@ -10,7 +10,7 @@ import { config } from '../config/app-config'
 
 const UPDATED_IMAGE_NOTIFICATION_MESSAGE = 'Updated profile image.'
 
-const url = config.url
+const url = config.backendUrl
 const userInfoUrl = url + '/api/profile/info'
 const saveImageUrl = url + '/api/profile/image'
 const imageUrlPrefix =
